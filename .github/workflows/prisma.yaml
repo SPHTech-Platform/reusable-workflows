@@ -12,7 +12,7 @@ on:
         type: string
         default: ./Dockerfile
         required: false
-      image_name:
+      image_tag:
         description: Name of the docker image
         type: string
         default: '${GITHUB_REPOSITORY#*/}:${GITHUB_SHA::8}'
@@ -44,8 +44,18 @@ jobs:
       - name: Check out the repository
         uses: actions/checkout@v2
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: Build the image
-        run: docker build --build-arg GITHUB_OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }} -f ${{ inputs.docker_file }} -t ${{ inputs.image_name }} ${{ inputs.docker_context }}
+        uses: docker/build-push-action@v2
+        with:
+          push: false
+          file: ${{ inputs.docker_file }}
+          context: ${{ inputs.docker_context }}
+          tags: ${{ inputs.image_tag }}
+          build-args: |
+            GITHUB_OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }}
 
       - name: Prisma Cloud image scan
         id: scan
@@ -54,7 +64,7 @@ jobs:
           pcc_console_url: ${{ secrets.PCC_CONSOLE_URL }}
           pcc_user: ${{ secrets.PCC_USER }}
           pcc_pass: ${{ secrets.PCC_PASS }}
-          image_name: ${{ env.IMAGE_NAME }}
+          image_name: ${{ inputs.image_tag }}
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v1
