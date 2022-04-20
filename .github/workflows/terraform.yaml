@@ -38,10 +38,20 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
       - name: Terraform init
         run: terraform init
+      - name: pre_commit_skips
+        run: |
+          SKIPS="tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov"
+          if [ $branch == $main_branch  ];then
+              SKIPS="${SKIPS},no-commit-to-branch"
+          fi
+          echo "::set-output name=skips::${SKIPS}"
+        env:
+          branch: ${{ github.ref_name }}
+          main_branch: ${{ inputs.main_branch }}
       - name: precommit run hooks
         uses: pre-commit/action@v2.0.3
         env:
-          SKIP: tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov${{ github.ref_name == inputs.main_branch && ',no-commit-to-branch' || '' }}
+          SKIP: ${{ steps.pre_commit_skips.skips }}
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
           token: ${{ secrets.GITHUB_TOKEN }}
