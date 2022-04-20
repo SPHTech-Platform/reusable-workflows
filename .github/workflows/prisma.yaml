@@ -1,0 +1,64 @@
+name: prisma-scan
+on:
+  workflow_call:
+    inputs:
+      upload_sarif:
+        description: Upload SARIF results to Github. Available in public repos, or private/internal repos for enterprises with Github Advanced Security.
+        type: boolean
+        default: true
+        required: false
+      docker_file:
+        description: Name of the dockerfile
+        type: string
+        default: ./Dockerfile
+        required: false
+      image_name:
+        description: Name of the docker image
+        type: string
+        default: '${GITHUB_REPOSITORY#*/}:${GITHUB_SHA::8}'
+        required: false
+      docker_context:
+        description: Docker context path
+        type: string
+        default: '.'
+        required: false
+    secrets:
+      PCC_CONSOLE_URL:
+        description: Prisma Cloud Console URL
+        required: true
+      PCC_USER:
+        description: Prisma Cloud Console User
+        required: true
+      PCC_PASS:
+        description: Prisma Cloud Console Password
+        required: true
+      OAUTH_TOKEN:
+        description: Github Token for accessing other dependency private repo
+        required: false
+jobs:
+  build-and-scan:
+    name: Build and scan image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Build the image
+        run: docker build --build-arg GITHUB_OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }} -f inputs.docker_file -t inputs.image_name inputs.docker_context
+
+      - name: Prisma Cloud image scan
+        id: scan
+        uses: PaloAltoNetworks/prisma-cloud-scan@v1
+        with:
+          pcc_console_url: ${{ secrets.PCC_CONSOLE_URL }}
+          pcc_user: ${{ secrets.PCC_USER }}
+          pcc_pass: ${{ secrets.PCC_PASS }}
+          image_name: ${{ env.IMAGE_NAME }}
+
+      - name: Upload SARIF file
+        if: ${{ always() }} # necessary if using failure thresholds in the image scan
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif_file }}
+        if: inputs.upload_sarif
