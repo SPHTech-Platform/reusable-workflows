@@ -81,7 +81,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           flags: -tee
-        if: inputs.upload_sarif == "false"
+        if: ${{ inputs.upload_sarif == "false" }}
 
       - name: Run Checkov action
         id: checkov
@@ -93,7 +93,7 @@ jobs:
         with:
           # Path to SARIF file relative to the root of the repository
           sarif_file: results.sarif
-        if: inputs.upload_sarif == "true"
+        if: ${{ inputs.upload_sarif == "true" }}
 
       - name: Run tfsec
         uses: aquasecurity/tfsec-sarif-action@v0.1.0
@@ -104,6 +104,6 @@ jobs:
         with:
           # Path to SARIF file relative to the root of the repository
           sarif_file: tfsec.sarif
-        if: inputs.upload_sarif == "true"
+        if: ${{ inputs.upload_sarif == "true" }}
 
 # Note: See https://github.com/actions/runner/issues/1483 for the casting of booleans as strings
