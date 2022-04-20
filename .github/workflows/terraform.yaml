@@ -11,7 +11,7 @@ on:
         description: Name of the main branch
         type: string
         default: main
-        required: true
+        required: false
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
