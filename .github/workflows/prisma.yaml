@@ -1,0 +1,101 @@
+name: prisma-scan
+on:
+  workflow_call:
+    inputs:
+      upload_sarif:
+        description: Upload SARIF results to Github. Available in public repos, or private/internal repos for enterprises with Github Advanced Security.
+        type: boolean
+        default: true
+        required: false
+      docker_file:
+        description: Name of the dockerfile
+        type: string
+        default: ./Dockerfile
+        required: false
+      image_tag:
+        description: Name of the docker image
+        type: string
+        required: false
+      docker_context:
+        description: Docker context path
+        type: string
+        default: '.'
+        required: false
+      action_cache:
+        description: Whether to turn on Github Action Cache for docker
+        type: boolean
+        default: false
+    secrets:
+      PCC_CONSOLE_URL:
+        description: Prisma Cloud Console URL
+        required: true
+      PCC_USER:
+        description: Prisma Cloud Console User
+        required: true
+      PCC_PASS:
+        description: Prisma Cloud Console Password
+        required: true
+      OAUTH_TOKEN:
+        description: Github Token for accessing other dependency private repo
+        required: false
+jobs:
+  build-and-scan:
+    name: Prisma container scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
+      - name: Setup image tag
+        run: |
+          if [[ -z "${{ inputs.image_tag }}" ]]; then
+            echo "IMAGE_TAG=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}'):${GITHUB_SHA::8}" >> $GITHUB_ENV
+          else
+            echo "IMAGE_TAG=$(echo '${{ inputs.image_tag }}')" >> $GITHUB_ENV
+          fi
+        shell: bash
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Build the image
+        uses: docker/build-push-action@v2
+        with:
+          push: false
+          load: true
+          file: ${{ inputs.docker_file }}
+          context: ${{ inputs.docker_context }}
+          tags: ${{ env.IMAGE_TAG }}
+          build-args: |
+            GITHUB_OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }}
+        if: inputs.action_cache != true
+
+      - name: Build the image with cache
+        uses: docker/build-push-action@v2
+        with:
+          push: false
+          load: true
+          file: ${{ inputs.docker_file }}
+          context: ${{ inputs.docker_context }}
+          tags: ${{ env.IMAGE_TAG }}
+          build-args: |
+            GITHUB_OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+        if: inputs.action_cache
+
+      - name: Prisma Cloud image scan
+        id: scan
+        uses: PaloAltoNetworks/prisma-cloud-scan@v1
+        with:
+          pcc_console_url: ${{ secrets.PCC_CONSOLE_URL }}
+          pcc_user: ${{ secrets.PCC_USER }}
+          pcc_pass: ${{ secrets.PCC_PASS }}
+          image_name: ${{ env.IMAGE_TAG }}
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          sarif_file: ${{ steps.scan.outputs.sarif_file }}
+        if: inputs.upload_sarif
