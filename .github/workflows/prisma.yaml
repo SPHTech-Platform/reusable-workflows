@@ -45,7 +45,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build the image
-        run: docker build --build-arg GITHUB_OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }} -f inputs.docker_file -t inputs.image_name inputs.docker_context
+        run: docker build --build-arg GITHUB_OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }} -f ${{ inputs.docker_file }} -t ${{ inputs.image_name }} ${{ inputs.docker_context }}
 
       - name: Prisma Cloud image scan
         id: scan
