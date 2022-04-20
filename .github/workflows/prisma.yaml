@@ -21,6 +21,10 @@ on:
         type: string
         default: '.'
         required: false
+      action_cache:
+        description: Whether to turn on Github Action Cache for docker
+        type: boolean
+        default: false
     secrets:
       PCC_CONSOLE_URL:
         description: Prisma Cloud Console URL
@@ -36,7 +40,7 @@ on:
         required: false
 jobs:
   build-and-scan:
-    name: Build and scan image
+    name: Prisma container scan
     runs-on: ubuntu-latest
 
     steps:
@@ -61,6 +65,21 @@ jobs:
           tags: ${{ env.IMAGE_TAG }}
           build-args: |
             GITHUB_OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }}
+        if: inputs.action_cache != true
+
+      - name: Build the image with cache
+        uses: docker/build-push-action@v2
+        with:
+          push: false
+          load: true
+          file: ${{ inputs.docker_file }}
+          context: ${{ inputs.docker_context }}
+          tags: ${{ env.IMAGE_TAG }}
+          build-args: |
+            GITHUB_OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+        if: inputs.action_cache
 
       - name: Prisma Cloud image scan
         id: scan
