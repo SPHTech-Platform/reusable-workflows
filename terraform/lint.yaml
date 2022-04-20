@@ -1,0 +1,107 @@
+name: terraform-ci
+on:
+  workflow_call:
+    inputs:
+      upload_sarif:
+        description: Upload SARIF results to Github. Available in public repos, or private/internal repos for enterprises with Github Advanced Security.
+        type: boolean
+        default: true
+        required: false
+    secrets:
+      TFE_TOKEN:
+        description: Terraform Cloud Token
+        required: false
+
+jobs:
+  fmt-validate:
+    needs: []
+    name: Format and Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: git fetch --depth=1 origin +${{github.base_ref}}
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: latest
+          cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
+      - name: Terraform init
+        run: terraform init
+      - name: precommit run hooks
+        uses: pre-commit/action@v2.0.3
+        env:
+          SKIP: tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov
+        with:
+          extra_args: --color=always --show-diff-on-failure --all-files
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - run: terraform -v
+  lint:
+    needs: []
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: latest
+          cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
+      - name: Terraform init
+        run: terraform init
+      - name: Run tflint with review comment on PR
+        uses: reviewdog/action-tflint@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tflint_init: true
+          filter_mode: "nofilter"
+          reporter: github-pr-review
+          # tflint_rulesets: "aws"
+          flags: --module
+  security:
+    needs: []
+    name: Security Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Run tfsec with reviewdog output on the PR
+        uses: reviewdog/action-tfsec@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          flags: -tee
+        if: !inputs.upload_sarif
+
+      - name: Run Checkov action
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          output_format: sarif
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: results.sarif
+        if: inputs.upload_sarif
+
+      - name: Run tfsec
+        uses: aquasecurity/tfsec-sarif-action@v0.1.0
+        with:
+          sarif_file: tfsec.sarif
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: tfsec.sarif
+        if: inputs.upload_sarif
