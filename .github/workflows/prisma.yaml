@@ -57,7 +57,6 @@ jobs:
           image_name: ${{ env.IMAGE_NAME }}
 
       - name: Upload SARIF file
-        if: ${{ always() }} # necessary if using failure thresholds in the image scan
         uses: github/codeql-action/upload-sarif@v1
         with:
           sarif_file: ${{ steps.scan.outputs.sarif_file }}
