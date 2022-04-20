@@ -44,6 +44,7 @@ jobs:
           if [ $branch == $main_branch  ];then
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
+          echo "${SKIPS}"
           echo "::set-output name=skips::${SKIPS}"
         env:
           branch: ${{ github.ref_name }}
