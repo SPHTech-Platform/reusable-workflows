@@ -15,7 +15,7 @@ on:
       image_tag:
         description: Name of the docker image
         type: string
-        default: '${GITHUB_REPOSITORY#*/}:${GITHUB_SHA::8}'
+        default: ${GITHUB_REPOSITORY#*/}:${GITHUB_SHA::8}
         required: false
       docker_context:
         description: Docker context path
