@@ -49,7 +49,7 @@ jobs:
 
       - name: Setup image tag
         run: |
-          if [[ -z ${{ inputs.image_tag }} ]]; then
+          if [[ -z "${{ inputs.image_tag }}" ]]; then
             echo "IMAGE_TAG=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}'):${GITHUB_SHA::8}" >> $GITHUB_ENV
           else
             echo "IMAGE_TAG=$(echo '${{ inputs.image_tag }}')" >> $GITHUB_ENV
