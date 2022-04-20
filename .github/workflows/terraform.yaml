@@ -81,7 +81,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           flags: -tee
-        if: ${{ inputs.upload_sarif == 'false' }}
+        if: inputs.upload_sarif != true
 
       - name: Run Checkov action
         id: checkov
