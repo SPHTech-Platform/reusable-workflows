@@ -41,7 +41,7 @@ jobs:
       - name: precommit run hooks
         uses: pre-commit/action@v2.0.3
         env:
-          SKIP: tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov${{ github.ref_name != inputs.main_branch && ",no-commit-to-branch" || "" }}
+          SKIP: tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov${{ github.ref_name != inputs.main_branch && ',no-commit-to-branch' || '' }}
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
           token: ${{ secrets.GITHUB_TOKEN }}
