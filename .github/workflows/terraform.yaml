@@ -7,6 +7,11 @@ on:
         type: boolean
         default: true
         required: false
+      main_branch:
+        description: Name of the main branch
+        type: string
+        default: main
+        required: true
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
@@ -36,7 +41,7 @@ jobs:
       - name: precommit run hooks
         uses: pre-commit/action@v2.0.3
         env:
-          SKIP: tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov
+          SKIP: tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov${{ github.ref_name != inputs.main_branch && ",no-commit-to-branch" || "" }}
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
           token: ${{ secrets.GITHUB_TOKEN }}
