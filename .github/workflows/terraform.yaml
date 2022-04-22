@@ -19,7 +19,6 @@ on:
 
 jobs:
   fmt-validate:
-    needs: []
     name: Format and Validate
     runs-on: ubuntu-latest
     steps:
@@ -42,7 +41,7 @@ jobs:
         id: precommit_skips
         run: |
           SKIPS="tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov"
-          if [ $branch == $main_branch  ];then
+          if [ "${branch}" == "${main_branch}"  ];then
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
           echo "${SKIPS}"
@@ -59,7 +58,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - run: terraform -v
   lint:
-    needs: []
     name: Linting
     runs-on: ubuntu-latest
     steps:
@@ -84,7 +82,6 @@ jobs:
           # tflint_rulesets: "aws"
           flags: --module
   security:
-    needs: []
     name: Security Checks
     runs-on: ubuntu-latest
     steps:
