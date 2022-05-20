@@ -27,8 +27,8 @@ jobs:
     name: Format and Validate
     runs-on: ubuntu-latest
     env:
-      ENV TF_PLUGIN_CACHE_DIR: "/root/.terraform.d/plugin-cache"
-      ENV TF_IN_AUTOMATION: "true"
+      TF_PLUGIN_CACHE_DIR: "/root/.terraform.d/plugin-cache"
+      TF_IN_AUTOMATION: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -69,8 +69,8 @@ jobs:
     name: Linting
     runs-on: ubuntu-latest
     env:
-      ENV TF_PLUGIN_CACHE_DIR: "/root/.terraform.d/plugin-cache"
-      ENV TF_IN_AUTOMATION: "true"
+      TF_PLUGIN_CACHE_DIR: "/root/.terraform.d/plugin-cache"
+      TF_IN_AUTOMATION: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -96,8 +96,8 @@ jobs:
     name: Security Checks
     runs-on: ubuntu-latest
     env:
-      ENV TF_PLUGIN_CACHE_DIR: "/root/.terraform.d/plugin-cache"
-      ENV TF_IN_AUTOMATION: "true"
+      TF_PLUGIN_CACHE_DIR: "/root/.terraform.d/plugin-cache"
+      TF_IN_AUTOMATION: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
