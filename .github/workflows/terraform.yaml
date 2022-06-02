@@ -61,7 +61,7 @@ jobs:
       - name: Precommit Skips
         id: precommit_skips
         run: |
-          SKIPS="terraform_tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov"
+          SKIPS="terraform_tflint,markdown-link-check,terraform_docs,terraform_tfsec,terraform_checkov"
           if [ "${branch}" == "${main_branch}"  ];then
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
