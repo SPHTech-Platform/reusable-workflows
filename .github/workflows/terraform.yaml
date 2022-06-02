@@ -21,37 +21,44 @@ on:
       TFE_TOKEN:
         description: Terraform Cloud Token
         required: false
+env:
+  TF_PLUGIN_CACHE_DIR: "~/.terraform.d/plugin-cache"
+  TF_IN_AUTOMATION: "true"
 
 jobs:
   fmt-validate:
     name: Format and Validate
     runs-on: ubuntu-latest
-    env:
-      TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
-      TF_IN_AUTOMATION: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-      - run: git fetch --depth=1 origin +${{github.base_ref}}
+          fetch-depth: 1
+
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
-      - name: Make Terraform Plugin Cache
-        run: |
-          mkdir -p "${TF_PLUGIN_CACHE_DIR}"
+
+      - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
+      - name: Cache Terraform
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
+
       - name: Terraform init
         run: terraform init
+
       - name: Precommit Skips
         id: precommit_skips
         run: |
-          SKIPS="tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov"
+          SKIPS="tflint,terraform_tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov"
           if [ "${branch}" == "${main_branch}"  ];then
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
@@ -60,6 +67,7 @@ jobs:
         env:
           branch: ${{ github.ref_name }}
           main_branch: ${{ inputs.main_branch }}
+
       - name: precommit run hooks
         uses: pre-commit/action@v2.0.3
         env:
@@ -68,27 +76,38 @@ jobs:
           extra_args: --color=always --show-diff-on-failure --all-files
           token: ${{ secrets.GITHUB_TOKEN }}
       - run: terraform -v
+
   lint:
     name: Linting
     runs-on: ubuntu-latest
-    env:
-      TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
-      TF_IN_AUTOMATION: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-      - name: Make Terraform Plugin Cache
-        run: |
-          mkdir -p "${TF_PLUGIN_CACHE_DIR}"
+          fetch-depth: 1
+
+      - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
+      - name: Cache Terraform
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+          key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
+
       - name: Terraform init
         run: terraform init
+
+      - name: Cache TFlint
+        uses: actions/cache@v2
+        with:
+          path: ~/.tflint.d/plugins
+          key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
       - name: Run tflint with review comment on PR
         uses: reviewdog/action-tflint@master
         with:
@@ -98,20 +117,16 @@ jobs:
           reporter: github-pr-review
           # tflint_rulesets: "aws"
           flags: --module
+  
   security:
     name: Security Checks
     runs-on: ubuntu-latest
-    env:
-      TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
-      TF_IN_AUTOMATION: "true"
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-      - name: Make Terraform Plugin Cache
-        run: |
-          mkdir -p "${TF_PLUGIN_CACHE_DIR}"
+          fetch-depth: 1
+
       - name: Run tfsec with reviewdog output on the PR
         uses: reviewdog/action-tfsec@master
         with:
