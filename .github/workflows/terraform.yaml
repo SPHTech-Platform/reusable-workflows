@@ -41,9 +41,7 @@ jobs:
         with:
           python-version: 3.7
 
-      - name: Make Terraform Plugin Cache
-        run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
-
+      - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
         uses: actions/cache@v2
         with:
@@ -61,7 +59,7 @@ jobs:
       - name: Precommit Skips
         id: precommit_skips
         run: |
-          SKIPS="terraform_tflint,markdown-link-check,terraform_docs,terraform_tfsec,terraform_checkov"
+          SKIPS="tflint,terraform_tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov"
           if [ "${branch}" == "${main_branch}"  ];then
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
@@ -89,8 +87,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Make Terraform Plugin Cache
-        run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
+      - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
         uses: actions/cache@v2
         with:
@@ -106,8 +103,8 @@ jobs:
       - name: Terraform init
         run: terraform init
 
-      - uses: actions/cache@v2
-        name: Cache plugin dir
+      - name: Cache TFlint
+        uses: actions/cache@v2
         with:
           path: ~/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
