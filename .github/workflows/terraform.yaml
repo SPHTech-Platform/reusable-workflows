@@ -33,9 +33,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
-
-      - run: git fetch --depth=1 origin +${{github.base_ref}}
+          fetch-depth: 1
 
       - uses: actions/setup-python@v2
         with:
@@ -47,7 +45,7 @@ jobs:
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
-          
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
@@ -86,7 +84,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
@@ -127,7 +125,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Run tfsec with reviewdog output on the PR
         uses: reviewdog/action-tfsec@master
