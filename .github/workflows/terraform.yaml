@@ -38,6 +38,9 @@ jobs:
       - uses: actions/setup-python@v2
         with:
           python-version: 3.7
+      - name: Make Terraform Plugin Cache
+        run: |
+          mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
@@ -76,6 +79,9 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Make Terraform Plugin Cache
+        run: |
+          mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
         with:
@@ -103,6 +109,9 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Make Terraform Plugin Cache
+        run: |
+          mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Run tfsec with reviewdog output on the PR
         uses: reviewdog/action-tfsec@master
         with:
