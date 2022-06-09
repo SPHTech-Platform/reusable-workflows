@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-          submodules: inputs.enable_submodules
+          submodules: ${{ inputs.enable_submodules }}
 
       - uses: actions/setup-python@v2
         with:
@@ -91,7 +91,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-          submodules: inputs.enable_submodules
+          submodules: ${{ inputs.enable_submodules }}
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
@@ -133,7 +133,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-          submodules: inputs.enable_submodules
+          submodules: ${{ inputs.enable_submodules }}
 
       - name: Run tfsec with reviewdog output on the PR
         uses: reviewdog/action-tfsec@master
