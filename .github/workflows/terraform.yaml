@@ -27,7 +27,7 @@ on:
         description: Terraform Cloud Token
         required: false
 env:
-  TF_PLUGIN_CACHE_DIR: "~/.terraform.d/plugin-cache"
+  TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   TF_IN_AUTOMATION: "true"
 
 jobs:
@@ -124,7 +124,7 @@ jobs:
           reporter: github-pr-review
           # tflint_rulesets: "aws"
           flags: --module
-  
+
   security:
     name: Security Checks
     runs-on: ubuntu-latest
