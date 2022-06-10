@@ -112,7 +112,7 @@ jobs:
       - name: Cache TFlint
         uses: actions/cache@v2
         with:
-          path: ~/.tflint.d/plugins
+          path: /home/runner/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
 
       - name: Run tflint with review comment on PR
