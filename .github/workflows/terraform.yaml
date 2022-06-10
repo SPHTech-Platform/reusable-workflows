@@ -27,7 +27,7 @@ on:
         description: Terraform Cloud Token
         required: false
 env:
-  TF_PLUGIN_CACHE_DIR: "~/.terraform.d/plugin-cache"
+  TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   TF_IN_AUTOMATION: "true"
 
 jobs:
@@ -112,7 +112,7 @@ jobs:
       - name: Cache TFlint
         uses: actions/cache@v2
         with:
-          path: ~/.tflint.d/plugins
+          path: /home/runner/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
 
       - name: Run tflint with review comment on PR
@@ -124,7 +124,7 @@ jobs:
           reporter: github-pr-review
           # tflint_rulesets: "aws"
           flags: --module
-  
+
   security:
     name: Security Checks
     runs-on: ubuntu-latest
