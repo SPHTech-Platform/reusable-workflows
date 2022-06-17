@@ -22,6 +22,11 @@ on:
         type: boolean
         default: false
         required: false
+      skip_precommit:
+        description: Comma separate list of pre-commit check IDs to skip
+        type: string
+        default: ""
+        required: false
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
@@ -65,9 +70,13 @@ jobs:
         id: precommit_skips
         run: |
           SKIPS="tflint,terraform_tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov"
-          if [ "${branch}" == "${main_branch}"  ];then
+          if [ "${branch}" == "${main_branch}" ];then
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
+          if [ "${skip_precommit}" != "" ]; then
+            SKIPS="${SKIPS},${skip_precommit}"
+          fi
+
           echo "${SKIPS}"
           echo "::set-output name=skips::${SKIPS}"
         env:
