@@ -73,7 +73,7 @@ jobs:
           if [ "${branch}" == "${main_branch}" ];then
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
-          if [ "${skip_precommit}" != "" ]; then
+          if [ "${{inputs.skip_precommit}}" != "" ]; then
             SKIPS="${SKIPS},${skip_precommit}"
           fi
 
