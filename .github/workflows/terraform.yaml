@@ -74,7 +74,7 @@ jobs:
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
           if [ "${{inputs.skip_precommit}}" != "" ]; then
-            SKIPS="${SKIPS},${skip_precommit}"
+            SKIPS="${SKIPS},${{inputs.skip_precommit}}"
           fi
 
           echo "${SKIPS}"
