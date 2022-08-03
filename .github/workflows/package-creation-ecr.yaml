@@ -8,7 +8,7 @@ on:
         type: string
         required: true
       aws_account_region:
-        description: "aws account"
+        description: "aws account region"
         type: string
         required: true
       ecr_repository:
