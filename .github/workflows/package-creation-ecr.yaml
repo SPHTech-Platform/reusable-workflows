@@ -1,0 +1,61 @@
+name: package-creation
+
+on:
+  workflow_call:
+    inputs:
+      aws_account_id:
+        description: "aws account number"
+        type: string
+        required: true
+      aws_account_region:
+        description: "aws account region"
+        type: string
+        required: true
+      iam_role_name:
+        description: "iam role to assume for was login to access ecr repositories"
+        type: string
+        required: true
+      context:
+        description: "source context"
+        type: string
+        default: "."
+        required: false
+
+jobs:
+  publish-to-ecr:
+    name: Build and Publish to ECR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-skip-session-tagging: true
+          role-to-assume: arn:aws:iam::${{ inputs.aws_account_id }}:role/${{ inputs.iam_role_name }}
+          role-session-name: gh-actions
+          aws-region: ${{ inputs.aws_account_region }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Extract branch name
+        uses: vazco/github-actions-branch-name@v1
+        id: branch
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ github.event.repository.name }}-${{ steps.branch.outputs.branch_name }}
+          IMAGE_TAG: ${{ github.sha }}
+        with:
+          context: ${{ inputs.context }}
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}, ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:latest
