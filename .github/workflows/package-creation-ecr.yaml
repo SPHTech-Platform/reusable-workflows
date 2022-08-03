@@ -7,6 +7,10 @@ on:
         description: "aws iam role arn for ecr repository access"
         type: string
         required: true
+      aws_account_region:
+        description: "aws account"
+        type: string
+        required: true
       ecr_repository:
         description: "ecr repository name"
         type: string
