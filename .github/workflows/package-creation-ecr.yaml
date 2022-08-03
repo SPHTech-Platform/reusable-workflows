@@ -12,7 +12,7 @@ on:
         type: string
         required: true
       iam_role_name:
-        description: "iam role to assume for was login to access ecr repositoru"
+        description: "iam role to assume for was login to access ecr repository"
         type: string
         required: true
       ecr_repository:
@@ -20,7 +20,7 @@ on:
         type: string
         required: true
       context:
-        description: "source context"
+        description: "source context - path location docker build"
         type: string
         default: "."
         required: false
