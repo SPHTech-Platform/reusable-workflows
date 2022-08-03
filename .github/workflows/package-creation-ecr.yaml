@@ -1,4 +1,4 @@
-name: package-creation
+name: package-creation-ecr
 
 on:
   workflow_call:
@@ -12,7 +12,11 @@ on:
         type: string
         required: true
       iam_role_name:
-        description: "iam role to assume for was login to access ecr repositories"
+        description: "iam role to assume for was login to access ecr repositoru"
+        type: string
+        required: true
+      ecr_repository:
+        description: "ecr repository name"
         type: string
         required: true
       context:
@@ -53,7 +57,7 @@ jobs:
         uses: docker/build-push-action@v3
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          REPOSITORY: ${{ github.event.repository.name }}-${{ steps.branch.outputs.branch_name }}
+          REPOSITORY: ${{ inputs.ecr_repository }}
           IMAGE_TAG: ${{ github.sha }}
         with:
           context: ${{ inputs.context }}
