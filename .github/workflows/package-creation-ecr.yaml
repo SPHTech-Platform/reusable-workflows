@@ -3,16 +3,8 @@ name: package-creation-ecr
 on:
   workflow_call:
     inputs:
-      aws_account_id:
+      iam_role_arn:
         description: "aws account number"
-        type: string
-        required: true
-      aws_account_region:
-        description: "aws account region"
-        type: string
-        required: true
-      iam_role_name:
-        description: "iam role to assume for was login to access ecr repository"
         type: string
         required: true
       ecr_repository:
@@ -41,7 +33,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-skip-session-tagging: true
-          role-to-assume: arn:aws:iam::${{ inputs.aws_account_id }}:role/${{ inputs.iam_role_name }}
+          role-to-assume: ${{ iam_role_arn }}
           role-session-name: gh-actions
           aws-region: ${{ inputs.aws_account_region }}
 
