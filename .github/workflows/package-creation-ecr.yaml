@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       iam_role_arn:
-        description: "aws account number"
+        description: "aws iam role arn for ecr repository access"
         type: string
         required: true
       ecr_repository:
