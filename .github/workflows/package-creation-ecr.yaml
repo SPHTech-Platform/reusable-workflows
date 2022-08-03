@@ -33,7 +33,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-skip-session-tagging: true
-          role-to-assume: ${{ iam_role_arn }}
+          role-to-assume: ${{ inputs.iam_role_arn }}
           role-session-name: gh-actions
           aws-region: ${{ inputs.aws_account_region }}
 
