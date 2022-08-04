@@ -1,0 +1,88 @@
+name: package-creation-ecr
+
+on:
+  workflow_call:
+    inputs:
+      iam_role_arn:
+        description: "aws iam role arn for ecr repository access"
+        type: string
+        required: true
+      aws_account_region:
+        description: "AWS account region"
+        type: string
+        required: true
+      ecr_repository:
+        description: "ECR repository name"
+        type: string
+        required: true
+      context:
+        description: "Source context - path location to docker build"
+        type: string
+        default: "."
+        required: false
+      file:
+        description: "Path to the Dockerfile"
+        type: string
+        default: Dockerfile
+        required: false
+      tag_mutability:
+        description: "ECR tag mutability"
+        type: boolean
+        default: true
+        required: false
+
+jobs:
+  publish-to-ecr:
+    name: Build and Publish to ECR
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-skip-session-tagging: true
+          role-to-assume: ${{ inputs.iam_role_arn }}
+          role-session-name: gh-actions
+          aws-region: ${{ inputs.aws_account_region }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Setup image tag
+        run: |
+          echo "IMAGE_TAG=${GITHUB_SHA::8}" >> "${GITHUB_ENV}"
+        shell: bash
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push Docker mutable image
+        uses: docker/build-push-action@v3
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ inputs.ecr_repository }}
+        with:
+          context: ${{ inputs.context }}
+          file: ${{ inputs.file }}
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}, ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:latest
+        if: inputs.tag_mutability
+
+      - name: Build and push Docker immutable image
+        uses: docker/build-push-action@v3
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ inputs.ecr_repository }}
+        with:
+          context: ${{ inputs.context }}
+          file: ${{ inputs.file }}
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+        if: inputs.tag_mutability != true
