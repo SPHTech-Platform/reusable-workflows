@@ -20,7 +20,16 @@ on:
         type: string
         default: "."
         required: false
-
+      file:
+        description: "Path to the Dockerfile"
+        type: string
+        default: Dockerfile
+        required: false
+      tag_mutability:
+        description: "comma separated image tags"
+        type: boolean
+        default: true
+        required: false
 
 jobs:
   publish-to-ecr:
@@ -54,14 +63,26 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push Docker image
+      - name: Build and push Docker mutable image
         uses: docker/build-push-action@v3
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ inputs.ecr_repository }}
         with:
           context: ${{ inputs.context }}
+          file: ${{ inputs.file }}
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}, ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        if: inputs.tag_mutability
+
+      - name: Build and push Docker immutable image
+        uses: docker/build-push-action@v3
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ inputs.ecr_repository }}
+        with:
+          context: ${{ inputs.context }}
+          file: ${{ inputs.file }}
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ env.IMAGE_TAG }}
+        if: inputs.tag_mutability != true
