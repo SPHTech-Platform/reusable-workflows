@@ -8,15 +8,15 @@ on:
         type: string
         required: true
       aws_account_region:
-        description: "aws account region"
+        description: "AWS account region"
         type: string
         required: true
       ecr_repository:
-        description: "ecr repository name"
+        description: "ECR repository name"
         type: string
         required: true
       context:
-        description: "source context - path location docker build"
+        description: "Source context - path location to docker build"
         type: string
         default: "."
         required: false
