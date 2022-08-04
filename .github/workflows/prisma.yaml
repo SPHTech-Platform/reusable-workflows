@@ -100,6 +100,18 @@ jobs:
           cat ${{ steps.scan.outputs.sarif_file }}
         shell: bash
 
+      - name: Patch sarif file uri scheme
+        id: patch
+        run: |
+          sed -i 's|${{ env.IMAGE_TAG }}|${{ inputs.docker_file }}|g' ${{ steps.scan.outputs.sarif_file }}
+        shell: bash
+
+      - name: View sarif file for after patch
+        id: after-patch
+        run: |
+          cat ${{ steps.scan.outputs.sarif_file }}
+        shell: bash
+
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
         with:
