@@ -94,6 +94,12 @@ jobs:
           pcc_pass: ${{ secrets.PCC_PASS }}
           image_name: ${{ env.IMAGE_TAG }}
 
+      - name: View sarif file for debug purpose
+        id: debug
+        run: |
+          cat ${{ steps.scan.outputs.sarif_file }}
+        shell: bash
+
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
         with:
