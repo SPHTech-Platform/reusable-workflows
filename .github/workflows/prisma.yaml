@@ -95,7 +95,7 @@ jobs:
           image_name: ${{ env.IMAGE_TAG }}
 
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: ${{ steps.scan.outputs.sarif_file }}
         if: inputs.upload_sarif
