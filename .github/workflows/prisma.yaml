@@ -93,23 +93,13 @@ jobs:
           pcc_user: ${{ secrets.PCC_USER }}
           pcc_pass: ${{ secrets.PCC_PASS }}
           image_name: ${{ env.IMAGE_TAG }}
-
-      - name: View sarif file for debug purpose
-        id: debug
-        run: |
-          cat ${{ steps.scan.outputs.sarif_file }}
-        shell: bash
-
+          
+      # prisma-cloud-scan action uses image_name as the URI
+      # https://github.com/github/codeql-action/issues/754
       - name: Patch sarif file uri scheme
         id: patch
         run: |
           sed -i 's|${{ env.IMAGE_TAG }}|${{ inputs.docker_file }}|g' ${{ steps.scan.outputs.sarif_file }}
-        shell: bash
-
-      - name: View sarif file for after patch
-        id: after-patch
-        run: |
-          cat ${{ steps.scan.outputs.sarif_file }}
         shell: bash
 
       - name: Upload SARIF file
