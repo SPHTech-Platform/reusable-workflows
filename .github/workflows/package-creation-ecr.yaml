@@ -26,7 +26,7 @@ on:
         default: Dockerfile
         required: false
       tag_mutability:
-        description: "comma separated image tags"
+        description: "ECR tag mutability"
         type: boolean
         default: true
         required: false
