@@ -17,6 +17,11 @@ on:
         type: string
         default: ""
         required: false
+      checkov_output_quiet:
+        description: Checkov output to display only failures
+        type: string
+        default: false
+        required: false
       enable_submodules:
         description: Flag to enable GitHub submodules.
         type: boolean
@@ -157,6 +162,7 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           output_format: sarif
+          quiet: ${{ inputs.checkov_output_quiet }}
           skip_check : ${{ inputs.checkov_skip_check }}
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v1
