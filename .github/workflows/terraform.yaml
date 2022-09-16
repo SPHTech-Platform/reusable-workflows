@@ -63,7 +63,7 @@ jobs:
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
@@ -115,7 +115,7 @@ jobs:
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
