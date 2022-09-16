@@ -31,6 +31,7 @@ on:
         description: Shell commands to run before terraform init
         default: ""
         required: false
+        type: string
       skip_precommit:
         description: Comma separated list of pre-commit check IDs to skip
         type: string
