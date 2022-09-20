@@ -82,8 +82,7 @@ jobs:
           file: ${{ inputs.docker_file }}
           context: ${{ inputs.docker_context }}
           tags: ${{ env.IMAGE_TAG }}
-          build-args: |
-            GITHUB_OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }}
+          build-args: ${{ inputs.docker_args }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
         if: inputs.action_cache
