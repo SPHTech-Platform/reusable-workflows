@@ -21,6 +21,10 @@ on:
         type: string
         default: '.'
         required: false
+      docker_args:
+        description: Docker build args
+        type: string
+        required: false
       action_cache:
         description: Whether to turn on Github Action Cache for docker
         type: boolean
@@ -67,8 +71,7 @@ jobs:
           file: ${{ inputs.docker_file }}
           context: ${{ inputs.docker_context }}
           tags: ${{ env.IMAGE_TAG }}
-          build-args: |
-            GITHUB_OAUTH_TOKEN=${{ secrets.OAUTH_TOKEN }}
+          build-args: ${{ inputs.docker_args }}
         if: inputs.action_cache != true
 
       - name: Build the image with cache
