@@ -27,6 +27,11 @@ on:
         type: boolean
         default: false
         required: false
+      pre_init_hook:
+        description: Shell commands to run before terraform init
+        default: ""
+        required: false
+        type: string
       skip_precommit:
         description: Comma separated list of pre-commit check IDs to skip
         type: string
@@ -67,6 +72,9 @@ jobs:
         with:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
+
+      - name: Pre-init Hook
+        run: ${{ inputs.pre_init_hook }}
 
       - name: Terraform init
         run: terraform init
