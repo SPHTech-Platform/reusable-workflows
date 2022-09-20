@@ -23,7 +23,7 @@ on:
         required: false
       docker_args:
         description: Docker build args
-        type: string
+        type: string # BUILD_ARG_1=hello,BUILD_ARG_2=world
         required: false
       action_cache:
         description: Whether to turn on Github Action Cache for docker
@@ -60,6 +60,10 @@ jobs:
           fi
         shell: bash
 
+      - name: Setup build-args list
+        id: vars
+        run: echo "::set-output name=build_args::$(jq 'split(",")' -Rc <(echo '${{ inputs.build_args }}'))"
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -71,7 +75,7 @@ jobs:
           file: ${{ inputs.docker_file }}
           context: ${{ inputs.docker_context }}
           tags: ${{ env.IMAGE_TAG }}
-          build-args: ${{ inputs.docker_args }}
+          build-args: ${{ steps.vars.outputs.build_args }}
         if: inputs.action_cache != true
 
       - name: Build the image with cache
@@ -82,7 +86,7 @@ jobs:
           file: ${{ inputs.docker_file }}
           context: ${{ inputs.docker_context }}
           tags: ${{ env.IMAGE_TAG }}
-          build-args: ${{ inputs.docker_args }}
+          build-args: ${{ steps.vars.outputs.build_args }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
         if: inputs.action_cache
