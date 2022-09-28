@@ -146,6 +146,7 @@ jobs:
           reporter: github-pr-review
           # tflint_rulesets: "aws"
           flags: --module
+          level: info
 
   security:
     name: Security Checks
