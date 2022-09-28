@@ -101,6 +101,10 @@ jobs:
         env:
           branch: ${{ github.ref_name }}
           main_branch: ${{ inputs.main_branch }}
+      - name: precommit clean
+        uses: pre-commit/action@v2.0.3
+        with:
+          extra_args: clean
 
       - name: precommit run hooks
         uses: pre-commit/action@v3.0.0
