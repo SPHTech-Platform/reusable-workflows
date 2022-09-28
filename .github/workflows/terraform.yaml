@@ -47,7 +47,7 @@ env:
 
 jobs:
   fmt-lint-validate:
-    name: Format and Validate
+    name: Format, Lint and Validate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -67,17 +67,22 @@ jobs:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: latest
+          cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
+
       - name: Cache TFlint
         uses: actions/cache@v2
         with:
           path: /home/runner/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v2
         with:
-          terraform_version: latest
-          cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
+          tflint_version: latest
 
       - name: Pre-init Hook
         run: ${{ inputs.pre_init_hook }}
