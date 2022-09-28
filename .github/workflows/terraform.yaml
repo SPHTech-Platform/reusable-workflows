@@ -46,7 +46,7 @@ env:
   TF_IN_AUTOMATION: "true"
 
 jobs:
-  fmt-validate:
+  fmt-lint-validate:
     name: Format and Validate
     runs-on: ubuntu-latest
     steps:
@@ -67,6 +67,12 @@ jobs:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
 
+      - name: Cache TFlint
+        uses: actions/cache@v2
+        with:
+          path: /home/runner/.tflint.d/plugins
+          key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
@@ -82,7 +88,7 @@ jobs:
       - name: Precommit Skips
         id: precommit_skips
         run: |
-          SKIPS="tflint,terraform_tflint,markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov"
+          SKIPS="markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov"
           if [ "${branch}" == "${main_branch}" ];then
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
@@ -105,31 +111,40 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - run: terraform -v
 
-  lint:
-    name: Linting
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-          submodules: ${{ inputs.enable_submodules }}
+  # lint:
+  #   name: Linting
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 1
+  #         submodules: ${{ inputs.enable_submodules }}
 
+<<<<<<< HEAD
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
         uses: actions/cache@v3
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+=======
+  #     - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
+  #     - name: Cache Terraform
+  #       uses: actions/cache@v2
+  #       with:
+  #         path: ${{ env.TF_PLUGIN_CACHE_DIR }}
+  #         key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+>>>>>>> bca88fc (Use pre-commit tflint)
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: latest
-          cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v2
+  #       with:
+  #         terraform_version: latest
+  #         cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
 
-      - name: Terraform init
-        run: terraform init
+  #     - name: Terraform init
+  #       run: terraform init
 
       - name: Cache TFlint
         uses: actions/cache@v3
@@ -137,16 +152,16 @@ jobs:
           path: /home/runner/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
 
-      - name: Run tflint with review comment on PR
-        uses: reviewdog/action-tflint@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tflint_init: true
-          filter_mode: "nofilter"
-          reporter: github-pr-review
-          # tflint_rulesets: "aws"
-          flags: --module
-          level: info
+  #     - name: Run tflint with review comment on PR
+  #       uses: reviewdog/action-tflint@master
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         tflint_init: true
+  #         filter_mode: "nofilter"
+  #         reporter: github-pr-review
+  #         # tflint_rulesets: "aws"
+  #         flags: --module
+  #         level: info
 
   security:
     name: Security Checks
