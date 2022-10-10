@@ -1,11 +1,9 @@
 on:
-  # Trigger analysis when pushing in master or pull requests, and when creating
-  # a pull request. 
-  push:
-    branches:
-      - master
-  pull_request:
-      types: [opened, synchronize, reopened]
+  workflow_call:
+    secrets:
+      SONARQUBE_TOKEN:
+        description: Terraform Cloud Token
+        required: false
 
 name: sonarqube-scan
 jobs:
