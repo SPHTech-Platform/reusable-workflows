@@ -1,9 +1,18 @@
 on:
   workflow_call:
+    inputs:
+      projectKey:
+        description: SonarQube application key
+        type: string
+        default: '.'
+        required: true
     secrets:
       SONARQUBE_TOKEN:
-        description: Terraform Cloud Token
-        required: false
+        description: Org wide token used for scanning
+        required: true
+      SONARQUBE_HOST:
+        description: SonarQube Host URL
+        required: true
 
 name: sonarqube-scan
 jobs:
