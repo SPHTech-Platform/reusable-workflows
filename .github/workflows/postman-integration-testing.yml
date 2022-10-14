@@ -53,11 +53,11 @@ jobs:
       - name: Run the API and Postman's tests
         id: newman_run
         run: |
-          ls -l ${GITHUB_WORKSPACE}
+          ls -l "${GITHUB_WORKSPACE}"
           newman --version
           newman run "${GITHUB_WORKSPACE}${{inputs.postman_collection_filepath}}" \
-                      --folder ${{inputs.postman_folder}} \
-                      --environment ${GITHUB_WORKSPACE}${{inputs.postman_environment_filepath}}
+                      --folder "${{inputs.postman_folder}}" \
+                      --environment "${GITHUB_WORKSPACE}${{inputs.postman_environment_filepath}}"
 
       - name: Slack Notification
         if: failure()
