@@ -15,11 +15,11 @@ on:
         description: "Postman folder that the integration test will execute"
         type: string
         required: true
-      postman_collection_filepath: 
+      postman_collection_filepath:
         description: "Postman Collection Filename relative to root of the repository"
         type: string
         required: true
-      postman_environment_filepath: 
+      postman_environment_filepath:
         description: "Postman Environment Filename relative to root of the repository"
         type: string
         required: true
