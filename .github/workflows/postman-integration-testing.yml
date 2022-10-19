@@ -1,0 +1,73 @@
+name: postman-integration-testing
+
+on:
+  workflow_call:
+    inputs:
+      repository_name:
+        description: "Repository Name <owner/repo> where postman collection is located"
+        type: string
+        required: true
+      repository_branch:
+        description: "Repository Branch where postman collection will be used"
+        type: string
+        required: true
+      postman_folder:
+        description: "Postman folder that the integration test will execute"
+        type: string
+        required: true
+      postman_collection_filepath:
+        description: "Postman Collection Filename relative to root of the repository"
+        type: string
+        required: true
+      postman_environment_filepath:
+        description: "Postman Environment Filename relative to root of the repository"
+        type: string
+        required: true
+    secrets:
+        repository_token:
+          description: "github token for private repository"
+          required: true
+        slack_webhook_url:
+          description: "Slack Webhook URL"
+          required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      - name: Checkout newshub-postman collection
+        uses: actions/checkout@v3
+        with:
+          repository: ${{inputs.repository_name}}
+          ref: ${{inputs.repository_branch}} # main branch uses the github.ref_name
+          token: ${{secrets.repository_token}}
+      - name: Install newman
+        run: |
+          npm install -g newman
+      - name: Run the API and Postman's tests
+        id: newman_run
+        run: |
+          ls -l "${GITHUB_WORKSPACE}"
+          newman --version
+          newman run "${GITHUB_WORKSPACE}${{inputs.postman_collection_filepath}}" \
+                      --folder "${{inputs.postman_folder}}" \
+                      --environment "${GITHUB_WORKSPACE}${{inputs.postman_environment_filepath}}"
+
+      - name: Slack Notification
+        if: failure()
+        id: slack
+        uses: slackapi/slack-github-action@v1.18.0
+        with:
+          payload: |
+            {
+              "text": "${{ github.repository }} - GitHub Action Integration Test Failure. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{secrets.slack_webhook_url}}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

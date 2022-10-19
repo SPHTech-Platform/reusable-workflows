@@ -189,4 +189,3 @@ jobs:
           # Path to SARIF file relative to the root of the repository
           sarif_file: tfsec.sarif
         if: inputs.upload_sarif
-

@@ -93,7 +93,7 @@ jobs:
           pcc_user: ${{ secrets.PCC_USER }}
           pcc_pass: ${{ secrets.PCC_PASS }}
           image_name: ${{ env.IMAGE_TAG }}
-          
+
       # prisma-cloud-scan action uses image_name as the URI
       # https://github.com/github/codeql-action/issues/754
       - name: Patch sarif file uri scheme
