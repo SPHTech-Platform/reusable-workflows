@@ -20,7 +20,7 @@ on:
       checkov_output_quiet:
         description: Checkov output to display only failures
         type: string
-        default: false
+        default: true
         required: false
       enable_submodules:
         description: Flag to enable GitHub submodules.
