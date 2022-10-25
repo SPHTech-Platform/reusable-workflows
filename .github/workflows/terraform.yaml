@@ -62,7 +62,7 @@ jobs:
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
@@ -91,13 +91,13 @@ jobs:
           fi
 
           echo "${SKIPS}"
-          echo "::set-output name=skips::${SKIPS}"
+          echo "skips=${SKIPS}" >> $GITHUB_OUTPUT
         env:
           branch: ${{ github.ref_name }}
           main_branch: ${{ inputs.main_branch }}
 
       - name: precommit run hooks
-        uses: pre-commit/action@v2.0.3
+        uses: pre-commit/action@v3.0.0
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         with:
@@ -117,7 +117,7 @@ jobs:
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
@@ -132,7 +132,7 @@ jobs:
         run: terraform init
 
       - name: Cache TFlint
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /home/runner/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
@@ -173,7 +173,7 @@ jobs:
           quiet: ${{ inputs.checkov_output_quiet }}
           skip_check : ${{ inputs.checkov_skip_check }}
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           # Path to SARIF file relative to the root of the repository
           sarif_file: results.sarif
@@ -184,7 +184,7 @@ jobs:
         with:
           sarif_file: tfsec.sarif
       - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v1
+        uses: github/codeql-action/upload-sarif@v2
         with:
           # Path to SARIF file relative to the root of the repository
           sarif_file: tfsec.sarif
