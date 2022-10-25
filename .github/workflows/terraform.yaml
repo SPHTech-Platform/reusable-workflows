@@ -91,7 +91,7 @@ jobs:
           fi
 
           echo "${SKIPS}"
-          echo "skips=${SKIPS}" >> $GITHUB_OUTPUT
+          echo "skips=${SKIPS}" >> "${GITHUB_OUTPUT}"
         env:
           branch: ${{ github.ref_name }}
           main_branch: ${{ inputs.main_branch }}
