@@ -27,10 +27,23 @@ on:
         default: "none"
 
 jobs:
-  Fortify-SAST:
-    # Use the appropriate runner for building your source code
-    runs-on: [self-hosted, sphtech-sec]
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.check_branch.outputs.runner }}
+    steps:
+      - name: Check branch
+        id: check_branch
+        run: |
+          if [ ${{ env.GITHUB_REPOSITORY_OWNER }} == 'SPHTech' ]; then
+            echo "runner=sphtech-sec" >> "$GITHUB_OUTPUT"
+          else
+            echo "runner=sphtech-platform-sec" >> "$GITHUB_OUTPUT"
+          fi
 
+  Fortify-SAST:
+    needs: setup
+    runs-on: ${{ needs.setup.outputs.runner }}
     steps:
       # Check out source code
       - name: Check Out Source Code
