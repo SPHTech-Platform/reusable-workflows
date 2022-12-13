@@ -27,7 +27,7 @@ on:
         default: "none"
 
 jobs:
-  setup:
+  setup-correct-runner:
     runs-on: ubuntu-latest
     outputs:
       runner: ${{ steps.check_branch.outputs.runner }}
@@ -35,17 +35,17 @@ jobs:
       - name: Check branch
         id: check_branch
         run: |
-          if [ ${{ env.GITHUB_REPOSITORY_OWNER }} == 'SPHTech' ]; then
+          if [ ${{ github.repository_owner }} == 'SPHTech' ]; then
             echo "runner=sphtech-sec" >> "$GITHUB_OUTPUT"
           else
             echo "runner=sphtech-platform-sec" >> "$GITHUB_OUTPUT"
           fi
 
   Fortify-SAST:
-    needs: setup
+    needs: setup-correct-runner
     runs-on:
     - self-hosted
-    - ${{ needs.setup.outputs.runner }}
+    - ${{ needs.setup-correct-runner.outputs.runner }}
     steps:
       # Check out source code
       - name: Check Out Source Code
