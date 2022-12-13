@@ -1,0 +1,4 @@
+self-hosted-runner:
+  labels:
+    - sphtech-sec
+    - sphtech-plt-sec
