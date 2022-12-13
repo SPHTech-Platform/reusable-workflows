@@ -69,7 +69,7 @@ jobs:
           SSC_CI_TOKEN: ${{ secrets.SSC_CI_TOKEN }}
           APPLICATION: ${{ inputs.APPLICATION }}
           VERSION: ${{ inputs.VERSION }}
-          BUILD_OPTS:  ${{ inputs.BUILD_OPTS }}
+          BUILD_OPTS: ${{ inputs.BUILD_OPTS }}
 
       ### Archive ScanCentral Client logs on failure ###
       - name: Save ScanCentral Logs
