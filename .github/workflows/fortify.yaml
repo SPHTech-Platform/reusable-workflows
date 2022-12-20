@@ -93,3 +93,4 @@ jobs:
         with:
            name: scancentral-logs
            path: ~/.fortify/scancentral/log
+           retention-days: 7
