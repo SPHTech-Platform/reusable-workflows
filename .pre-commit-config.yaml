@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/rhysd/actionlint
-    rev: main
+    rev: v1.6.22
     hooks:
       - id: actionlint
   - repo: https://github.com/pre-commit/pre-commit-hooks
