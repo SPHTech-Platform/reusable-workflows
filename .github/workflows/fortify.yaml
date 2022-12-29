@@ -42,6 +42,7 @@ jobs:
           fi
 
   Fortify-SAST:
+    timeout-minutes: 120
     needs: setup-correct-runner
     runs-on:
     - self-hosted
