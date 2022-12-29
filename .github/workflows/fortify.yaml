@@ -25,6 +25,11 @@ on:
         type: string
         required: false
         default: "none"
+      ANDROID_SCAN:
+        description: 'Scan for Android apps - setup SDK'
+        type: string
+        required: false
+        default: false
 
 jobs:
   setup-correct-runner:
@@ -40,7 +45,9 @@ jobs:
           else
             echo "runner=sphtech-platform-sec" >> "$GITHUB_OUTPUT"
           fi
-
+      - name: Setup Android SDK
+        if: inputs.ANDROID_SCAN == true
+        uses: android-actions/setup-android@v2
   Fortify-SAST:
     timeout-minutes: 120
     needs: setup-correct-runner
