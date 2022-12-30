@@ -35,21 +35,20 @@ jobs:
   setup-correct-runner:
     runs-on: ubuntu-latest
     outputs:
-      runner: ${{ steps.check_branch.outputs.runner }}
+      runner: ${{ steps.check_org_and_platform.outputs.runner }}
     steps:
-      - name: Check branch
-        id: check_branch
-        if: inputs.ANDROID_SCAN != 'enabled'
+      - name: Check Org and Platform
+        id: check_org_and_platform
         run: |
-          if [ ${{ github.repository_owner }} == 'SPHTech' ]; then
-            echo "runner=sphtech-sec" >> "$GITHUB_OUTPUT"
+          if [[ ${{ inputs.ANDROID_SCAN }} == 'enabled' ]]; then
+            echo "runner=fortify-android" >> "$GITHUB_OUTPUT"
           else
-            echo "runner=sphtech-platform-sec" >> "$GITHUB_OUTPUT"
+              if [ ${{ github.repository_owner }} == 'SPHTech' ]; then
+                echo "runner=sphtech-sec" >> "$GITHUB_OUTPUT"
+              else
+                echo "runner=sphtech-platform-sec" >> "$GITHUB_OUTPUT"
+              fi
           fi
-      - name: Set to Android runner
-        if: inputs.ANDROID_SCAN == 'enabled'
-        id: set_android_runner
-        run: echo "runner=fortify-android" >> "$GITHUB_OUTPUT"
   Fortify-SAST:
     timeout-minutes: 120
     needs: setup-correct-runner
