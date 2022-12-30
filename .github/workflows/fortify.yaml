@@ -49,8 +49,7 @@ jobs:
       - name: Set to Android runner
         if: inputs.ANDROID_SCAN == 'enabled'
         id: set_android_runner
-        run: |
-          echo "runner=fortify-android" >> "$GITHUB_OUTPUT"
+        run: echo "runner=fortify-android" >> "$GITHUB_OUTPUT"
   Fortify-SAST:
     timeout-minutes: 120
     needs: setup-correct-runner
