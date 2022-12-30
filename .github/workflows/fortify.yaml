@@ -39,17 +39,18 @@ jobs:
     steps:
       - name: Check branch
         id: check_branch
+        if: inputs.ANDROID_SCAN != 'enabled'
         run: |
           if [ ${{ github.repository_owner }} == 'SPHTech' ]; then
             echo "runner=sphtech-sec" >> "$GITHUB_OUTPUT"
           else
             echo "runner=sphtech-platform-sec" >> "$GITHUB_OUTPUT"
           fi
-      - name: Setup Android SDK
+      - name: Set to Android runner
         if: inputs.ANDROID_SCAN == 'enabled'
         id: set_android_runner
         run: |
-          echo "runner=fortify-android" > "$GITHUB_OUTPUT"
+          echo "runner=fortify-android" >> "$GITHUB_OUTPUT"
   Fortify-SAST:
     timeout-minutes: 120
     needs: setup-correct-runner
