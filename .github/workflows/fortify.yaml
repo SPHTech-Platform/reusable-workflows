@@ -8,6 +8,9 @@ on:
       SC_CLIENT_TOKEN:
         description: 'ScanCentral Client token'
         required: true
+      PAT_TOKEN:
+        description: 'User PAT Token - to be removed'
+        required: false
     inputs:
       APPLICATION:
         description: 'Application Name'
@@ -76,13 +79,19 @@ jobs:
         with:
           java-version: 11
 
+      # https://github.com/actions/setup-node/issues/49
+      # https://github.com/github/roadmap/issues/578
+      # TODO: change to granular perms once roadmap is ready
       - name: Setup Android local properties
         if: inputs.ANDROID_SCAN == 'enabled'
         run: |
            echo "sdk.dir=/opt/android" >> ./local.properties
            echo "GITHUB_USERNAME=$GITHUB_ACTOR" >> ./local.properties
-           echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> ./local.properties
-           cat ./local.properties
+           echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}" >> ./local.properties
+          #  echo "GITHUB_USERNAME=$GITHUB_ACTOR" >> ./local.properties
+          #  echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> ./local.properties
+          #  cat ./local.properties
+
 
       ### Set up Fortify ScanCentral Client ###
       - name: Download Fortify ScanCentral Client
