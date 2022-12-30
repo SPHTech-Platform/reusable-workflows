@@ -2,9 +2,6 @@ name: Fortify ScanCentral SAST Scan
 on:
   workflow_call:
     secrets:
-      SC_CONTROLLER_URL:
-        description: 'ScanCentral Controller URL'
-        required: true
       SSC_CI_TOKEN:
         description: 'CIToken for service account'
         required: true
@@ -30,6 +27,11 @@ on:
         type: string
         required: false
         default: "disabled"
+      SC_CONTROLLER_URL:
+        description: 'ScanCentral Controller URL'
+        type: string
+        required: false
+        default: "http://fortify-scancentral-controller.fortify.svc.cluster.local:8080/scancentral-ctrl/"
 
 jobs:
   setup-correct-runner:
@@ -89,7 +91,7 @@ jobs:
       - name: Perform SAST Scan
         run: scancentral -url "$SC_CONTROLLER_URL" start -bt "$BUILD_OPTS" -upload -application "$APPLICATION" -version "$VERSION" -uptoken "$SSC_CI_TOKEN"
         env:
-          SC_CONTROLLER_URL: ${{ secrets.SC_CONTROLLER_URL }}
+          SC_CONTROLLER_URL: ${{ inputs.SC_CONTROLLER_URL }}
           SSC_CI_TOKEN: ${{ secrets.SSC_CI_TOKEN }}
           APPLICATION: ${{ inputs.APPLICATION }}
           VERSION: ${{ inputs.VERSION }}
