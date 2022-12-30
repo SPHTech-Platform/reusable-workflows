@@ -80,7 +80,7 @@ jobs:
         if: inputs.ANDROID_SCAN == 'enabled'
         run: |
            echo "sdk.dir=/opt/android" >> ./local.properties
-           echo "GITHUB_USERNAME=$GITHUB_ACTOR"
+           echo "GITHUB_USERNAME=$GITHUB_ACTOR >> ./local.properties"
            echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> ./local.properties
            cat ./local.properties
 
