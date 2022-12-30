@@ -81,7 +81,7 @@ jobs:
         run: |
            echo "sdk.dir=/opt/android" >> ./local.properties
            echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> ./local.properties
-           ls ./local.properties
+           cat ./local.properties
 
       ### Set up Fortify ScanCentral Client ###
       - name: Download Fortify ScanCentral Client
