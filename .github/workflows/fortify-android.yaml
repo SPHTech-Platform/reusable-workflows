@@ -57,7 +57,7 @@ jobs:
            PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
 
       ### Start Fortify Scanning ###
-      - name: Fortify Scan after translation
+      - name: Fortify Sourceanalyzer Scan after translation
         run: sourceanalyzer -b "$BUILD_ID" -scan -f results.fpr
         env:
           BUILD_ID: ${{ inputs.BUILD_ID }}
@@ -74,7 +74,16 @@ jobs:
           PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
 
       ### Archive ScanCentral Client logs on failure ###
-      - name: Save ScanCentral Logs
+      - name: Save sourceanalyzer Logs
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+           name: scancentral-logs
+           path: ~/.fortify/sca22.1/log
+           retention-days: 7
+
+      ### Clean up of build folder
+      - name: Save sourceanalyzer Logs
         uses: actions/upload-artifact@v2
         if: failure()
         with:
