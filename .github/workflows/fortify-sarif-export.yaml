@@ -20,9 +20,24 @@ on:
         required: false
         default: "https://fortify.platform.sphdigital.com.sg/"
 jobs:
-  Import-SSC-SAST:
+  setup-correct-runner:
     runs-on: ubuntu-latest
-
+    outputs:
+      runner: ${{ steps.check_branch.outputs.runner }}
+    steps:
+      - name: Check branch
+        id: check_branch
+        run: |
+          if [ ${{ github.repository_owner }} == 'SPHTech' ]; then
+            echo "runner=sphtech-sec" >> "$GITHUB_OUTPUT"
+          else
+            echo "runner=sphtech-platform-sec" >> "$GITHUB_OUTPUT"
+          fi
+  Import-SSC-SAST:
+    needs: setup-correct-runner
+    runs-on:
+    - self-hosted
+    - ${{ needs.setup-correct-runner.outputs.runner }}
     steps:
       # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
       - name: Export Results
