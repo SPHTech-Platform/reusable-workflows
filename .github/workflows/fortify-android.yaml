@@ -44,10 +44,12 @@ jobs:
       # TODO: change to granular perms once roadmap is ready
       - name: Setup Android local properties
         run: |
-           echo "sdk.dir=/opt/android" >> ./local.properties
-           echo "GITHUB_USERNAME=$GITHUB_ACTOR" >> ./local.properties
-           echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}" >> ./local.properties
-          #  cat ./local.properties
+          {
+            echo "sdk.dir=/opt/android"
+            echo "GITHUB_USERNAME=$GITHUB_ACTOR"
+            echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}"
+          } >> ./local.properties
+          cat ./local.properties
 
       ### Set up Fortify SourceAnalyzer Paths ###
       - name: Set up PATH for scanning
