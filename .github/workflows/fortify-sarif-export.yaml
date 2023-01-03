@@ -39,6 +39,10 @@ jobs:
     - self-hosted
     - ${{ needs.setup-correct-runner.outputs.runner }}
     steps:
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
       # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
       - name: Export Results
         uses: fortify/gha-export-vulnerabilities@v1
