@@ -21,6 +21,11 @@ on:
         description: 'Build ID'
         type: string
         required: true
+      SSC_URL:
+        description: "SSC Base URL"
+        type: string
+        required: false
+        default: "https://fortify.platform.sphdigital.com.sg/"
 
 jobs:
   FortifySourceAnalyzerAndroid:
@@ -73,7 +78,7 @@ jobs:
       - name: Upload Scan results
         run: fortifyclient -url "$SSC_URL" -authtoken "$SSC_CI_TOKEN" uploadFPR -file results.fpr -application "$APPLICATION" -applicationVersion "$VERSION"
         env:
-          SSC_URL: "https://fortify.platform.sphdigital.com.sg/"
+          SSC_URL: ${{ inputs.SSC_URL }}
           SSC_CI_TOKEN: ${{ secrets.SSC_CI_TOKEN }}
           APPLICATION: ${{ inputs.APPLICATION }}
           VERSION: ${{ inputs.VERSION }}
