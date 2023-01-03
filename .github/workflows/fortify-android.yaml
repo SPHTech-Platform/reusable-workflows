@@ -42,11 +42,17 @@ jobs:
       # https://github.com/actions/setup-node/issues/49
       # https://github.com/github/roadmap/issues/578
       # TODO: change to granular perms once roadmap is ready
-      - name: Setup Android local properties
+      - name: Setup Android local properties and sourceanalyzer clean
         run: |
-           echo "sdk.dir=/opt/android" >> ./local.properties
-           echo "GITHUB_USERNAME=$GITHUB_ACTOR" >> ./local.properties
-           echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}" >> ./local.properties
+           {
+            echo "sdk.dir=/opt/android"
+            echo "GITHUB_USERNAME=$GITHUB_ACTOR"
+            echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}"
+           } >> ./local.properties
+           sourceanalyzer -b "$BUILD_ID" -clean
+        env:
+          BUILD_ID: ${{ inputs.BUILD_ID }}
+          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
           #  cat ./local.properties
 
       ### Start Fortify Translation ###
@@ -73,14 +79,9 @@ jobs:
           VERSION: ${{ inputs.VERSION }}
           PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
 
-      ### Archive ScanCentral Client logs on failure ###
-      - name: Save sourceanalyzer Logs
-        uses: actions/upload-artifact@v2
-        if: failure()
-        with:
-           name: scancentral-logs
-           path: ~/.fortify/sca22.1/log
-           retention-days: 7
+      ### Clean up FPR file
+      - name: Clean up fpr file
+        run: rm results.fpr
 
       ### Clean up of build folder
       - name: Save sourceanalyzer Logs
