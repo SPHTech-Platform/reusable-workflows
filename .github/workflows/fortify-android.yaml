@@ -23,7 +23,7 @@ on:
         required: true
 
 jobs:
-  Fortify-SourceAnalyzer:
+  FortifySourceAnalyzerAndroid:
     timeout-minutes: 120
     runs-on:
     - self-hosted
@@ -50,17 +50,18 @@ jobs:
           #  cat ./local.properties
 
       ### Start Fortify Translation ###
-      - name: Scan Android code with gradle
+      - name: Translate Code for Android Fortify Scan
         run: sourceanalyzer -b "$BUILD_ID" -gradle -verbose -debug -logfile "${BUILD_ID}_trans.log" ./gradlew ":app_bt:${BUILD_ID}" -Pdisable-plugins -x test -x lint
         env:
            BUILD_ID: ${{ inputs.BUILD_ID }}
            PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
 
       ### Start Fortify Scanning ###
-      - name: Perform SAST Scan
+      - name: Fortify Scan after translation
         run: sourceanalyzer -b "$BUILD_ID" -scan -f results.fpr
         env:
           BUILD_ID: ${{ inputs.BUILD_ID }}
+          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
 
       ### Upload Fortify Results ###
       - name: Upload Scan results
@@ -70,6 +71,7 @@ jobs:
           SSC_CI_TOKEN: ${{ secrets.SSC_CI_TOKEN }}
           APPLICATION: ${{ inputs.APPLICATION }}
           VERSION: ${{ inputs.VERSION }}
+          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
 
       ### Archive ScanCentral Client logs on failure ###
       - name: Save ScanCentral Logs
