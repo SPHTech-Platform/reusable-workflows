@@ -1,6 +1,24 @@
 name: Import SSC SAST Results
-on: [workflow_dispatch]
-
+on:
+  workflow_call:
+    secrets:
+      SSC_CI_TOKEN:
+        description: 'CIToken for service account'
+        required: true
+    inputs:
+      APPLICATION:
+        description: 'Application Name'
+        type: string
+        required: true
+      VERSION:
+        description: 'Application Version'
+        type: string
+        required: true
+      SSC_URL:
+        description: "SSC Base URL"
+        type: string
+        required: false
+        default: "https://fortify.platform.sphdigital.com.sg/"
 jobs:
   Import-SSC-SAST:
     runs-on: ubuntu-latest
@@ -10,9 +28,9 @@ jobs:
       - name: Export Results
         uses: fortify/gha-export-vulnerabilities@v1
         with:
-          ssc_base_url: ${{ secrets.SSC_BASE_URL }}
-          ssc_auth_token: ${{ secrets.SSC_AUTHTOKEN_DECODED }}
-          ssc_version_id: ${{ secrets.SSC_VERSION_ID }}
+          ssc_base_url: ${{ inputs.SSC_URL }}
+          ssc_auth_token: ${{ secrets.SSC_CI_TOKEN }}
+          ssc_version_name: ${{ inputs.APPLICATION }}:${{ inputs.VERSION }}
 
       # Import Fortify SAST results to GitHub Security Code Scanning
       - name: Import Results
