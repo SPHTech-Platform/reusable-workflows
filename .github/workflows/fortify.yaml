@@ -25,21 +25,11 @@ on:
         type: string
         required: false
         default: "none"
-      ANDROID_SCAN:
-        description: 'Scan for Android apps - setup SDK'
-        type: string
-        required: false
-        default: "disabled"
       SC_CONTROLLER_URL:
         description: 'ScanCentral Controller URL'
         type: string
         required: false
         default: "http://fortify-scancentral-controller.fortify.svc.cluster.local:8080/scancentral-ctrl/"
-      OFFLOAD_SCAN_ONLY:
-        description: 'Set flag whether to offload scan only'
-        type: string
-        required: false
-        default: ""
 
 jobs:
   setup-correct-runner:
@@ -50,14 +40,10 @@ jobs:
       - name: Check Org and Platform
         id: check_org_and_platform
         run: |
-          if [[ ${{ inputs.ANDROID_SCAN }} == 'enabled' ]]; then
-            echo "runner=fortify-android" >> "$GITHUB_OUTPUT"
+          if [ ${{ github.repository_owner }} == 'SPHTech' ]; then
+            echo "runner=sphtech-sec" >> "$GITHUB_OUTPUT"
           else
-              if [ ${{ github.repository_owner }} == 'SPHTech' ]; then
-                echo "runner=sphtech-sec" >> "$GITHUB_OUTPUT"
-              else
-                echo "runner=sphtech-platform-sec" >> "$GITHUB_OUTPUT"
-              fi
+            echo "runner=sphtech-platform-sec" >> "$GITHUB_OUTPUT"
           fi
   Fortify-SAST:
     timeout-minutes: 120
@@ -84,20 +70,6 @@ jobs:
         with:
           java-version: 11
 
-      # https://github.com/actions/setup-node/issues/49
-      # https://github.com/github/roadmap/issues/578
-      # TODO: change to granular perms once roadmap is ready
-      - name: Setup Android local properties
-        if: inputs.ANDROID_SCAN == 'enabled'
-        run: |
-           echo "sdk.dir=/opt/android" >> ./local.properties
-           echo "GITHUB_USERNAME=$GITHUB_ACTOR" >> ./local.properties
-           echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}" >> ./local.properties
-          #  echo "GITHUB_USERNAME=$GITHUB_ACTOR" >> ./local.properties
-          #  echo "GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> ./local.properties
-          #  cat ./local.properties
-
-
       ### Set up Fortify ScanCentral Client ###
       - name: Download Fortify ScanCentral Client
         uses: fortify/gha-setup-scancentral-client@v1
@@ -111,14 +83,13 @@ jobs:
       #   ScanCentral Client will download dependencies for maven, gradle and msbuild projects.
       #   For other build tools, add your build commands to the workflow to download necessary dependencies and prepare according to Fortify SCA documentation.
       - name: Perform SAST Scan
-        run: scancentral -url "$SC_CONTROLLER_URL" start -bt "$BUILD_OPTS" -upload -application "$APPLICATION" -version "$VERSION" -uptoken "$SSC_CI_TOKEN" $OFFLOAD
+        run: scancentral -url "$SC_CONTROLLER_URL" start -bt "$BUILD_OPTS" -upload -application "$APPLICATION" -version "$VERSION" -uptoken "$SSC_CI_TOKEN"
         env:
           SC_CONTROLLER_URL: ${{ inputs.SC_CONTROLLER_URL }}
           SSC_CI_TOKEN: ${{ secrets.SSC_CI_TOKEN }}
           APPLICATION: ${{ inputs.APPLICATION }}
           VERSION: ${{ inputs.VERSION }}
           BUILD_OPTS: ${{ inputs.BUILD_OPTS }}
-          OFFLOAD_SCAN_ONLY: ${{ inputs.OFFLOAD_SCAN_ONLY }}
 
       ### Archive ScanCentral Client logs on failure ###
       - name: Save ScanCentral Logs
