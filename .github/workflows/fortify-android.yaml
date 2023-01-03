@@ -49,15 +49,12 @@ jobs:
            echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}" >> ./local.properties
           #  cat ./local.properties
 
-      ### Set up Fortify SourceAnalyzer Paths ###
-      - name: Set up PATH for scanning
-        run: source /home/ssm-user/.bash_profile
-
       ### Start Fortify Translation ###
       - name: Scan Android code with gradle
         run: sourceanalyzer -b "$BUILD_ID" -gradle -verbose -debug -logfile "${BUILD_ID}_trans.log" ./gradlew ":app_bt:${BUILD_ID}" -Pdisable-plugins -x test -x lint
         env:
            BUILD_ID: ${{ inputs.BUILD_ID }}
+           PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
 
       ### Start Fortify Scanning ###
       - name: Perform SAST Scan
