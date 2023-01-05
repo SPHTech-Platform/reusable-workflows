@@ -1,0 +1,98 @@
+name: Fortify Android Scan
+on:
+  workflow_call:
+    secrets:
+      SSC_CI_TOKEN:
+        description: 'CIToken for service account'
+        required: true
+      PAT_TOKEN:
+        description: 'User PAT Token - to be removed'
+        required: false
+    inputs:
+      APPLICATION:
+        description: 'Application Name'
+        type: string
+        required: true
+      VERSION:
+        description: 'Application Version'
+        type: string
+        required: true
+      BUILD_ID:
+        description: 'Build ID'
+        type: string
+        required: true
+      SSC_URL:
+        description: "SSC Base URL"
+        type: string
+        required: false
+        default: "https://fortify.platform.sphdigital.com.sg/"
+
+jobs:
+  FortifySourceAnalyzerAndroid:
+    timeout-minutes: 120
+    runs-on:
+    - self-hosted
+    - fortify-android
+    steps:
+      # Check out source code
+      - name: Check Out Source Code
+        uses: actions/checkout@v3
+        with:
+          # Fetch at least the immediate parents so that if this is a pull request then we can checkout the head.
+          fetch-depth: 2
+      # If this run was triggered by a pull request event, then checkout the head of the pull request instead of the merge commit.
+      - run: git checkout HEAD^2
+        if: ${{ github.event_name == 'pull_request' }}
+
+      # https://github.com/actions/setup-node/issues/49
+      # https://github.com/github/roadmap/issues/578
+      # TODO: change to granular perms once roadmap is ready
+      - name: Setup Android local properties and sourceanalyzer clean
+        run: |
+           {
+            echo "sdk.dir=/opt/android"
+            echo "GITHUB_USERNAME=$GITHUB_ACTOR"
+            echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}"
+           } >> ./local.properties
+           sourceanalyzer -b "$BUILD_ID" -clean
+        env:
+          BUILD_ID: ${{ inputs.BUILD_ID }}
+          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
+          #  cat ./local.properties
+
+      ### Start Fortify Translation ###
+      - name: Translate Code for Android Fortify Scan
+        run: sourceanalyzer -b "$BUILD_ID" -gradle -verbose -debug -logfile "${BUILD_ID}_trans.log" ./gradlew ":app_bt:${BUILD_ID}" -Pdisable-plugins -x test -x lint
+        env:
+           BUILD_ID: ${{ inputs.BUILD_ID }}
+           PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
+
+      ### Start Fortify Scanning ###
+      - name: Fortify Sourceanalyzer Scan after translation
+        run: sourceanalyzer -b "$BUILD_ID" -scan -f results.fpr
+        env:
+          BUILD_ID: ${{ inputs.BUILD_ID }}
+          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
+
+      ### Upload Fortify Results ###
+      - name: Upload Scan results
+        run: fortifyclient -url "$SSC_URL" -authtoken "$SSC_CI_TOKEN" uploadFPR -file results.fpr -application "$APPLICATION" -applicationVersion "$VERSION"
+        env:
+          SSC_URL: ${{ inputs.SSC_URL }}
+          SSC_CI_TOKEN: ${{ secrets.SSC_CI_TOKEN }}
+          APPLICATION: ${{ inputs.APPLICATION }}
+          VERSION: ${{ inputs.VERSION }}
+          PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
+
+      ### Clean up FPR file
+      - name: Clean up fpr file
+        run: rm results.fpr
+
+      ### Clean up of build folder
+      - name: Save sourceanalyzer Logs
+        uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+           name: scancentral-logs
+           path: ~/.fortify/sca22.1/log
+           retention-days: 7
