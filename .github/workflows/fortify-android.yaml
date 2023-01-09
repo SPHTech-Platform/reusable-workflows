@@ -26,6 +26,11 @@ on:
         type: string
         required: false
         default: "https://fortify.platform.sphdigital.com.sg/"
+      BUILD_PREFIX:
+        description: "Build Prefix - default app_bt"
+        type: string
+        required: false
+        default: "app_bt"
 
 jobs:
   FortifySourceAnalyzerAndroid:
@@ -62,10 +67,11 @@ jobs:
 
       ### Start Fortify Translation ###
       - name: Translate Code for Android Fortify Scan
-        run: sourceanalyzer -b "$BUILD_ID" -gradle -verbose -debug -logfile "${BUILD_ID}_trans.log" ./gradlew ":app_bt:${BUILD_ID}" -Pdisable-plugins -x test -x lint
+        run: sourceanalyzer -b "$BUILD_ID" -gradle -verbose -debug -logfile "${BUILD_ID}_trans.log" ./gradlew ":${BUILD_PREFIX}:${BUILD_ID}" -Pdisable-plugins -x test -x lint
         env:
            BUILD_ID: ${{ inputs.BUILD_ID }}
            PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
+           BUILD_PREFIX: $${{ inputs.BUILD_PREFIX }}
 
       ### Start Fortify Scanning ###
       - name: Fortify Sourceanalyzer Scan after translation
