@@ -71,7 +71,7 @@ jobs:
         env:
            BUILD_ID: ${{ inputs.BUILD_ID }}
            PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
-           BUILD_PREFIX: $${{ inputs.BUILD_PREFIX }}
+           BUILD_PREFIX: ${{ inputs.BUILD_PREFIX }}
 
       ### Start Fortify Scanning ###
       - name: Fortify Sourceanalyzer Scan after translation
