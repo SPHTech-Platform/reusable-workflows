@@ -148,7 +148,7 @@ jobs:
           tflint_version: latest
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Installl pre-commit
+      - name: Install pre-commit
         uses: BSFishy/pip-action@v1
         with:
           packages: |
@@ -170,7 +170,7 @@ jobs:
           skip_warn=${{ inputs.skip_tflint_warn }}
           if [ "$tflint_return" -eq 0 ]; then
             echo "TFLint correctly returned failure: ${tflint_return}"
-          elif [ $skip_warn ] && [ $tflint_return -eq 2 ]; then
+          elif [ "$skip_warn" ] && [ "$tflint_return" -eq 2 ]; then
             echo "TFLint warnings found and skipped."
           else
             echo "TFLint returned ${reviewdog_return}, expected '0'. Failing..."
