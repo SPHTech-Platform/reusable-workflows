@@ -160,22 +160,24 @@ jobs:
         run: |
           pre-commit run terraform_tflint --all-files
           exit_code=$?
-          echo "$exit_code"
-          echo "{return-code}=${tflint_return}" >> "$GITHUB_OUTPUT"
+          echo "{return-code}=${exit_code}" >> "$GITHUB_OUTPUT"
 
       - name: Check status code
         if: success() || failure ()
         run: |
           tflint_return=${{ steps.tflint.outputs.return-code }}
+          # SKIP_WARN for skipping all warnings
           skip_warn=${{ inputs.skip_tflint_warn }}
-          if [ "$tflint_return" -eq 0 ]; then
+          if [ $tflint_return == 0 ]; then # tflint no error
             echo "TFLint correctly returned failure: ${tflint_return}"
-          elif [ "$skip_warn" ] && [ "$tflint_return" -eq 2 ]; then
+          elif [ $skip_warn ] && [ $tflint_return == 2 ]; then #tflint has warnings but no error, pass if skip_warn
             echo "TFLint warnings found and skipped."
           else
-            echo "TFLint returned ${reviewdog_return}, expected '0'. Failing..."
+            echo "TFLint returned ${tflint_return}, expected '0'. Failing..."
             exit 1
           fi
+
+          # Exit codes: 0 is pass 1 is error 2 is warning
 
   security:
     name: Security Checks
