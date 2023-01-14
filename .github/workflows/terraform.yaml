@@ -160,12 +160,16 @@ jobs:
         run: |
           pre-commit run terraform_tflint --all-files
           exit_code=$?
-          echo "{return-code}=${exit_code}" >> "$GITHUB_OUTPUT"
+          echo "test"
+          echo $exit_code
+          echo "{return-code}={$exit_code}" >> "$GITHUB_OUTPUT"
 
       - name: Check status code
         if: success() || failure ()
         run: |
           tflint_return=${{ steps.tflint.outputs.return-code }}
+          echo "value"
+          echo $tflint_return
           # SKIP_WARN for skipping all warnings
           skip_warn=${{ inputs.skip_tflint_warn }}
           if [ $tflint_return -eq 0 ]; then # tflint no error
