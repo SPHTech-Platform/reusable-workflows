@@ -168,9 +168,9 @@ jobs:
           tflint_return=${{ steps.tflint.outputs.return-code }}
           # SKIP_WARN for skipping all warnings
           skip_warn=${{ inputs.skip_tflint_warn }}
-          if [ $tflint_return == 0 ]; then # tflint no error
+          if [ $tflint_return -eq 0 ]; then # tflint no error
             echo "TFLint correctly returned failure: ${tflint_return}"
-          elif [ $skip_warn ] && [ $tflint_return == 2 ]; then #tflint has warnings but no error, pass if skip_warn
+          elif [ $skip_warn ] && [ $tflint_return -eq 2 ]; then #tflint has warnings but no error, pass if skip_warn
             echo "TFLint warnings found and skipped."
           else
             echo "TFLint returned ${tflint_return}, expected '0'. Failing..."
