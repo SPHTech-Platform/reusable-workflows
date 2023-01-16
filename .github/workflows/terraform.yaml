@@ -157,22 +157,14 @@ jobs:
       - name: Run TFLint
         id: tflint
         continue-on-error: true
-        run: |
-          terraform init
+        run:
           pre-commit run terraform_tflint --all-files
-          # it exits here and never use it
-          echo "hihihihih"
-          exit_code=$?
-          echo "test"
-          echo $exit_code
-          echo "{return-code}={0}" >> "$GITHUB_OUTPUT"
-          # echo "{return-code}={$exit_code}" >> "$GITHUB_OUTPUT"
+          echo "return_code=$?" >> "$GITHUB_ENV"
 
       - name: Check status code
         if: success() || failure ()
         run: |
-          tflint_return=${{ steps.tflint.outputs.return-code }}
-          echo "value"
+          tflint_return=${{ env.return_code }}
           echo $tflint_return
           # SKIP_WARN for skipping all warnings
           skip_warn=${{ inputs.skip_tflint_warn }}
