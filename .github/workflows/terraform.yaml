@@ -157,7 +157,7 @@ jobs:
       - name: Run TFLint
         id: tflint
         continue-on-error: true
-        run:
+        run: |
           pre-commit run terraform_tflint --all-files
           echo "return_code=$?" >> "$GITHUB_ENV"
 
