@@ -158,7 +158,8 @@ jobs:
         id: tflint
         continue-on-error: true
         run: |
-          pre-commit run terraform_tflint --all-files
+          pre-commit run terraform_validate --all-files --args=--module
+          pre-commit run terraform_tflint --all-files --args=--module
 
       - name: Check status code
         run: |
@@ -171,6 +172,7 @@ jobs:
             exit 1
           fi
 
+         #steps.tflint.outcome  check for outcome
   security:
     name: Security Checks
     runs-on: ubuntu-latest
