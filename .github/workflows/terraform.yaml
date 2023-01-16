@@ -165,7 +165,7 @@ jobs:
           echo "test"
           echo $exit_code
           echo "{return-code}={0}" >> "$GITHUB_OUTPUT"
-          echo "{return-code}={$exit_code}" >> "$GITHUB_OUTPUT"
+          # echo "{return-code}={$exit_code}" >> "$GITHUB_OUTPUT"
 
       - name: Check status code
         if: success() || failure ()
