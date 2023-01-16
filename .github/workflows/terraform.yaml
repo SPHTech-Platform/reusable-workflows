@@ -119,7 +119,6 @@ jobs:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
 
-
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
         uses: actions/cache@v3
@@ -159,9 +158,7 @@ jobs:
         continue-on-error: true
         run: |
           # echo "testvar=haha" >> "$GITHUB_ENV"
-          pre-commit run terraform_tflint --all-files &>/dev/null
-          tflint --init
-          tflint -f compact
+          pre-commit run terraform_tflint --all-files
           exit_code=$?
           echo "after tflint"
           echo "return_code=$exit_code" >> "$GITHUB_ENV"
