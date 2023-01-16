@@ -158,8 +158,8 @@ jobs:
         id: tflint
         continue-on-error: true
         run: |
-          pre-commit run terraform_validate --all-files --args=--module
-          pre-commit run terraform_tflint --all-files --args=--module
+          pre-commit run terraform_validate --all-files
+          pre-commit run terraform_tflint --all-files
 
       - name: Check status code
         run: |
