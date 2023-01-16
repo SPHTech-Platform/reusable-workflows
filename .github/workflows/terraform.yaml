@@ -158,7 +158,9 @@ jobs:
         id: tflint
         continue-on-error: true
         run: |
+          terraform init
           pre-commit run terraform_tflint --all-files
+          # it exits here and never use it
           exit_code=$?
           echo "test"
           echo $exit_code
