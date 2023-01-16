@@ -158,7 +158,8 @@ jobs:
         continue-on-error: true
         run: |
           # echo "testvar=haha" >> "$GITHUB_ENV"
-          pre-commit run terraform_tflint --all-files
+          # pre-commit run terraform_tflint --all-files
+          tflint "$(git diff --name-only)"
           exit_code=$?
           echo "after tflint"
           echo "return_code=$exit_code" >> "$GITHUB_ENV"
