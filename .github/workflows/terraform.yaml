@@ -161,7 +161,6 @@ jobs:
           pre-commit run terraform_tflint --all-files
 
       - name: Check status code
-        if:  ${{ failure() }}
         run: |
           # SKIP_WARN for skipping all warnings
           skip_warn="${{ inputs.skip_tflint_warn }}"
