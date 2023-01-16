@@ -161,6 +161,7 @@ jobs:
           terraform init
           pre-commit run terraform_tflint --all-files
           # it exits here and never use it
+          echo "hihihihih"
           exit_code=$?
           echo "test"
           echo $exit_code
