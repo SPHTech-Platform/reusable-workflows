@@ -158,6 +158,7 @@ jobs:
         id: tflint
         continue-on-error: true
         run: |
+          echo "testvar=haha" >> "$GITHUB_ENV"
           pre-commit run terraform_tflint --all-files
           echo "return_code=$?" >> "$GITHUB_ENV"
           echo "testvar=haha" >> "$GITHUB_ENV"
