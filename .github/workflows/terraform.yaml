@@ -180,7 +180,7 @@ jobs:
           if [ "$skip_warn" = true ]; then
             echo "TFLint warnings and errors found and skipped."
           else
-            echo "TFLint errors found, expected '0'. Failing..."
+            echo "TFLint errors found, expected '0'. Failing... To enable skipping please set 'skip_tflint_warn' to true in workflow file"
             exit 1
           fi
 
