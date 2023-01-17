@@ -171,8 +171,7 @@ jobs:
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         with:
-          extra_args: --color=always --show-diff-on-failure --all-files
-          token: ${{ secrets.GITHUB_TOKEN }}
+          extra_args: --color=always --show-diff-on-failure
 
       - name: Check status code
         run: |
