@@ -167,13 +167,12 @@ jobs:
 
       - name: precommit run tflint hooks
         uses: pre-commit/action@v3.0.0
+        continue-on-error: true
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - run: terraform -v
 
       - name: Check status code
         run: |
