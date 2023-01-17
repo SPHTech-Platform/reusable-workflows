@@ -143,7 +143,7 @@ jobs:
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v2
         with:
-          tflint_version: 0.44.1
+          tflint_version: "v0.44.1"
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Precommit Skips
