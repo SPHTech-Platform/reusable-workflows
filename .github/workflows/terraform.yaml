@@ -101,6 +101,7 @@ jobs:
           main_branch: ${{ inputs.main_branch }}
 
       - name: precommit run hooks
+        id: precommit_run_hooks
         uses: pre-commit/action@v3.0.0
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
@@ -166,6 +167,7 @@ jobs:
           main_branch: ${{ inputs.main_branch }}
 
       - name: precommit run tflint hooks
+        id: precommit_run_hooks
         uses: pre-commit/action@v3.0.0
         continue-on-error: true
         env:
@@ -174,6 +176,7 @@ jobs:
           extra_args: --color=always --show-diff-on-failure
 
       - name: Check status code
+        if: steps.precommit_run_hooks.outcome == 'failure'
         run: |
           # SKIP_WARN for skipping all warnings
           skip_warn="${{ inputs.skip_tflint_warn }}"
