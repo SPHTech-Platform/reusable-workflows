@@ -152,7 +152,7 @@ jobs:
       - name: Precommit Skips
         id: precommit_skips
         run: |
-          SKIPS="shellcheck,terraform_validate,terraform_fmt,markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov"
+          SKIPS="shellcheck,terraform_fmt,markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov"
           if [ "${branch}" == "${main_branch}" ];then
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
