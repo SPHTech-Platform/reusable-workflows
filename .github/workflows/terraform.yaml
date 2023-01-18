@@ -37,6 +37,10 @@ on:
         type: string
         default: ""
         required: false
+      skip_tflint_warn:
+        description: Do not fail for tflint warning
+        type: boolean
+        default: false
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
@@ -97,12 +101,14 @@ jobs:
           main_branch: ${{ inputs.main_branch }}
 
       - name: precommit run hooks
+        id: precommit_run_hooks
         uses: pre-commit/action@v3.0.0
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
           token: ${{ secrets.GITHUB_TOKEN }}
+
       - run: terraform -v
 
   lint:
@@ -128,25 +134,57 @@ jobs:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
 
-      - name: Terraform init
-        run: terraform init
-
       - name: Cache TFlint
         uses: actions/cache@v3
         with:
           path: /home/runner/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
 
-      - name: Run tflint with review comment on PR
-        uses: reviewdog/action-tflint@master
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v2
         with:
+          tflint_version: "v0.44.1"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          tflint_init: true
-          filter_mode: "nofilter"
-          reporter: github-pr-review
-          # tflint_rulesets: "aws"
-          flags: --module
 
+      - name: Precommit Skips
+        id: precommit_skips
+        run: |
+          SKIPS="shellcheck,terraform_fmt,markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov"
+          if [ "${branch}" == "${main_branch}" ];then
+              SKIPS="${SKIPS},no-commit-to-branch"
+          fi
+          if [ "${{inputs.skip_precommit}}" != "" ]; then
+            SKIPS="${SKIPS},${{inputs.skip_precommit}}"
+          fi
+
+          echo "${SKIPS}"
+          echo "skips=${SKIPS}" >> "${GITHUB_OUTPUT}"
+        env:
+          branch: ${{ github.ref_name }}
+          main_branch: ${{ inputs.main_branch }}
+
+      - name: precommit run tflint hooks
+        id: precommit_run_hooks
+        uses: pre-commit/action@v3.0.0
+        continue-on-error: true
+        env:
+          SKIP: ${{ steps.precommit_skips.outputs.skips }}
+        with:
+          extra_args: --color=always --show-diff-on-failure --all-files
+
+      - name: Check status code
+        if: steps.precommit_run_hooks.outcome == 'failure'
+        run: |
+          # SKIP_WARN for skipping all warnings
+          skip_warn="${{ inputs.skip_tflint_warn }}"
+          if [ "$skip_warn" = true ]; then
+            echo "TFLint warnings and errors found and skipped."
+          else
+            echo "TFLint errors found, expected '0'. Failing... To enable skipping please set 'skip_tflint_warn' to true in workflow file"
+            exit 1
+          fi
+
+         #steps.tflint.outcome  check for outcome
   security:
     name: Security Checks
     runs-on: ubuntu-latest
