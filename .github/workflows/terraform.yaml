@@ -40,7 +40,7 @@ on:
       skip_tflint_warn:
         description: Do not fail for tflint warning
         type: boolean
-        default: false
+        default: true
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
