@@ -53,8 +53,8 @@ jobs:
   fmt-validate:
     name: Format and Validate
     runs-on:
-    - self-hosted
-    - platform-eng
+      - self-hosted
+      - platform-eng
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -120,7 +120,9 @@ jobs:
 
   lint:
     name: Linting
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - platform-eng
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -191,10 +193,12 @@ jobs:
             exit 1
           fi
 
-         #steps.tflint.outcome  check for outcome
+        #steps.tflint.outcome  check for outcome
   security:
     name: Security Checks
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - platform-eng
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -216,7 +220,7 @@ jobs:
         with:
           output_format: sarif
           quiet: ${{ inputs.checkov_output_quiet }}
-          skip_check : ${{ inputs.checkov_skip_check }}
+          skip_check: ${{ inputs.checkov_skip_check }}
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
         with:
