@@ -79,7 +79,7 @@ jobs:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
 
-      - name: Setup NodeJS
+      - name: Setup NodeJS 19
         uses: actions/setup-node@v3
         with:
           node-version: 19
@@ -142,6 +142,11 @@ jobs:
         with:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
+
+      - name: Setup NodeJS 19
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
 
       - name: Cache TFlint
         uses: actions/cache@v3
