@@ -3,3 +3,4 @@ self-hosted-runner:
     - sphtech-sec
     - sphtech-plt-sec
     - fortify-android
+    - platform-eng

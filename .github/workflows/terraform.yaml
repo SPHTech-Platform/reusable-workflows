@@ -52,7 +52,9 @@ env:
 jobs:
   fmt-validate:
     name: Format and Validate
-    runs-on: ubuntu-latest
+    runs-on:
+    - self-hosted
+    - platform-eng
     steps:
       - name: Checkout
         uses: actions/checkout@v3
