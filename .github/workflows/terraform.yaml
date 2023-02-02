@@ -62,10 +62,6 @@ jobs:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
 
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
         uses: actions/cache@v3
@@ -78,11 +74,6 @@ jobs:
         with:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
-
-      - name: Setup NodeJS 19
-        uses: actions/setup-node@v3
-        with:
-          node-version: 19
 
       - name: Pre-init Hook
         run: ${{ inputs.pre_init_hook }}
@@ -142,11 +133,6 @@ jobs:
         with:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
-
-      - name: Setup NodeJS 19
-        uses: actions/setup-node@v3
-        with:
-          node-version: 19
 
       - name: Cache TFlint
         uses: actions/cache@v3
