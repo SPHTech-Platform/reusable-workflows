@@ -146,6 +146,13 @@ jobs:
           tflint_version: "v0.44.1"
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: set PY
+        run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> "$GITHUB_ENV"
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
+
       - name: Precommit Skips
         id: precommit_skips
         run: |
