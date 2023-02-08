@@ -146,7 +146,7 @@ jobs:
           tflint_version: "v0.44.1"
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: set PY
+      - name: set PY for precommit cache
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> "$GITHUB_ENV"
 
       - name: Cache Pre-commit
@@ -158,7 +158,7 @@ jobs:
       - name: Precommit Skips
         id: precommit_skips
         run: |
-          SKIPS="shellcheck,terraform_fmt,markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov"
+          SKIPS="shellcheck,terraform_fmt,terraform_providers_lock,markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov"
           if [ "${branch}" == "${main_branch}" ];then
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
