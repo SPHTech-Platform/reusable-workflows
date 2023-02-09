@@ -57,19 +57,6 @@ env:
   TF_IN_AUTOMATION: "true"
 
 jobs:
-  setup-correct-runner:
-    runs-on: ubuntu-latest
-    outputs:
-      runner: ${{ steps.check_branch.outputs.runner }}
-    steps:
-      - name: Check branch
-        id: check_branch
-        run: |
-          if [ ${{ github.repository_owner }} == 'SPHTech' ]; then
-            echo "runner=sphtech-sec" >> "$GITHUB_OUTPUT"
-          else
-            echo "runner=sphtech-platform-sec" >> "$GITHUB_OUTPUT"
-          fi
   fmt-validate:
     name: Format and Validate
     runs-on: ${{ inputs.shouldUseSelfHosted && fromJSON('[ "self-hosted", secrets.RUNNER_LABEL ]') || 'ubuntu-latest' }} # this ternary logic doesnt make sense but documented here https://github.com/actions/runner/issues/409
