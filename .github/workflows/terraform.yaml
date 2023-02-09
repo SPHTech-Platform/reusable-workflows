@@ -107,7 +107,6 @@ jobs:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - run: terraform -v
 
@@ -184,7 +183,7 @@ jobs:
             exit 1
           fi
 
-         #steps.tflint.outcome  check for outcome
+        #steps.tflint.outcome  check for outcome
   security:
     name: Security Checks
     runs-on: ubuntu-latest
@@ -209,7 +208,7 @@ jobs:
         with:
           output_format: sarif
           quiet: ${{ inputs.checkov_output_quiet }}
-          skip_check : ${{ inputs.checkov_skip_check }}
+          skip_check: ${{ inputs.checkov_skip_check }}
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
         with:
