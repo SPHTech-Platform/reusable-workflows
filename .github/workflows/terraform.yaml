@@ -41,10 +41,15 @@ on:
         description: Do not fail for tflint warning
         type: boolean
         default: true
+      runner_label:
+        description: Runner label to point to runners
+        type: string
+        required: true
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
         required: false
+
 env:
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   TF_IN_AUTOMATION: "true"
@@ -52,17 +57,15 @@ env:
 jobs:
   fmt-validate:
     name: Format and Validate
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
-
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
@@ -113,7 +116,9 @@ jobs:
 
   lint:
     name: Linting
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -146,10 +151,19 @@ jobs:
           tflint_version: "v0.44.1"
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: set PY for precommit cache
+        run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> "$GITHUB_ENV"
+
+      - name: Cache Pre-commit
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
+
       - name: Precommit Skips
         id: precommit_skips
         run: |
-          SKIPS="shellcheck,terraform_fmt,markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov"
+          SKIPS="shellcheck,terraform_fmt,terraform_providers_lock,markdown-link-check,terraform_docs,terraform_tfsec,terraform_checkov,terraform_checkov"
           if [ "${branch}" == "${main_branch}" ];then
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
@@ -184,10 +198,12 @@ jobs:
             exit 1
           fi
 
-         #steps.tflint.outcome  check for outcome
+        #steps.tflint.outcome  check for outcome
   security:
     name: Security Checks
-    runs-on: ubuntu-latest
+    runs-on:
+      - self-hosted
+      - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -209,7 +225,7 @@ jobs:
         with:
           output_format: sarif
           quiet: ${{ inputs.checkov_output_quiet }}
-          skip_check : ${{ inputs.checkov_skip_check }}
+          skip_check: ${{ inputs.checkov_skip_check }}
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
         with:
