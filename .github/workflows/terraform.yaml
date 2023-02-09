@@ -59,7 +59,7 @@ env:
 jobs:
   fmt-validate:
     name: Format and Validate
-    runs-on: ${{ inputs.shouldUseSelfHosted && '[ ''self-hosted'', secrets.RUNNER_LABEL ]' || 'ubuntu-latest' }} # this ternary logic doesnt make sense but documented here https://github.com/actions/runner/issues/409
+    runs-on: ${{ inputs.shouldUseSelfHosted && '[ ''self-hosted'', "secrets.RUNNER_LABEL" ]' || 'ubuntu-latest' }} # this ternary logic doesnt make sense but documented here https://github.com/actions/runner/issues/409
     steps:
       - name: Checkout
         uses: actions/checkout@v3
