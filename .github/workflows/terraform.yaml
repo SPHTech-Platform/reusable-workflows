@@ -57,9 +57,20 @@ env:
   TF_IN_AUTOMATION: "true"
 
 jobs:
+  setup-correct-runner:
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.check_org_and_platform.outputs.runner }}
+    steps:
+      - name: Check Org and Platform
+        id: check_org_and_platform
+        run: echo "runner=${{ secrets.RUNNER_LABEL }}" >> "$GITHUB_OUTPUT"
   fmt-validate:
     name: Format and Validate
-    runs-on: ${{ inputs.shouldUseSelfHosted && '[ ''self-hosted'', "secrets.RUNNER_LABEL" ]' || 'ubuntu-latest' }} # this ternary logic doesnt make sense but documented here https://github.com/actions/runner/issues/409
+    needs: setup-correct-runner
+    runs-on:
+      - ${{ inputs.shouldUseSelfHosted && fromJSON('self-hosted') || 'ubuntu-latest' }} # this ternary logic doesnt make sense but documented here https://github.com/actions/runner/issues/409
+      - ${{ needs.setup-correct-runner.outputs.runner }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
