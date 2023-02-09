@@ -41,20 +41,38 @@ on:
         description: Do not fail for tflint warning
         type: boolean
         default: true
+      shouldUseSelfHosted:
+        description: Enable Self hosted runner.os
+        type: boolean
+        default: true
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
+        required: false
+      RUNNER_LABEL:
+        description: Runner label to be used
         required: false
 env:
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   TF_IN_AUTOMATION: "true"
 
 jobs:
+  setup-correct-runner:
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.check_branch.outputs.runner }}
+    steps:
+      - name: Check branch
+        id: check_branch
+        run: |
+          if [ ${{ github.repository_owner }} == 'SPHTech' ]; then
+            echo "runner=sphtech-sec" >> "$GITHUB_OUTPUT"
+          else
+            echo "runner=sphtech-platform-sec" >> "$GITHUB_OUTPUT"
+          fi
   fmt-validate:
     name: Format and Validate
-    runs-on:
-      - self-hosted
-      - platform-eng
+    runs-on: ${{ inputs.shouldUseSelfHosted && fromJSON('[ "self-hosted", secrets.RUNNER_LABEL ]') || 'ubuntu-latest' }} # this ternary logic doesnt make sense but documented here https://github.com/actions/runner/issues/409
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -111,9 +129,7 @@ jobs:
 
   lint:
     name: Linting
-    runs-on:
-      - self-hosted
-      - platform-eng
+    runs-on: ${{ inputs.shouldUseSelfHosted && fromJSON('[ "self-hosted", secrets.RUNNER_LABEL ]') || 'ubuntu-latest' }} # this ternary logic doesnt make sense but documented here https://github.com/actions/runner/issues/409
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -196,9 +212,7 @@ jobs:
         #steps.tflint.outcome  check for outcome
   security:
     name: Security Checks
-    runs-on:
-      - self-hosted
-      - platform-eng
+    runs-on: ${{ inputs.shouldUseSelfHosted && fromJSON('[ "self-hosted", secrets.RUNNER_LABEL ]') || 'ubuntu-latest' }} # this ternary logic doesnt make sense but documented here https://github.com/actions/runner/issues/409
     steps:
       - name: Checkout
         uses: actions/checkout@v3
