@@ -69,7 +69,7 @@ jobs:
     name: Format and Validate
     needs: setup-correct-runner
     runs-on:
-      - ${{ inputs.shouldUseSelfHosted && fromJSON('self-hosted') || 'ubuntu-latest' }} # this ternary logic doesnt make sense but documented here https://github.com/actions/runner/issues/409
+      - ${{ (inputs.shouldUseSelfHosted && fromJSON('self-hosted')) || 'ubuntu-latest' }} # this ternary logic doesnt make sense but documented here https://github.com/actions/runner/issues/409
       - ${{ needs.setup-correct-runner.outputs.runner }}
     steps:
       - name: Checkout
