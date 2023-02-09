@@ -51,6 +51,7 @@ on:
 env:
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   TF_IN_AUTOMATION: "true"
+  RUNNER_LABEL: ${{ secrets.RUNNER_LABEL }}
 
 jobs:
   setup-correct-runner:
@@ -60,7 +61,7 @@ jobs:
     steps:
       - name: Check Org and Platform
         id: check_org_and_platform
-        run: echo "runner=${{ secrets.RUNNER_LABEL }}" >> "$GITHUB_OUTPUT"
+        run: echo "runner=$RUNNER_LABEL" >> "$GITHUB_OUTPUT"
   fmt-validate:
     name: Format and Validate
     needs: setup-correct-runner
