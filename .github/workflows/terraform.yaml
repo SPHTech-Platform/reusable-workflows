@@ -41,33 +41,25 @@ on:
         description: Do not fail for tflint warning
         type: boolean
         default: true
+      runner_label:
+        description: Runner label to point to runners
+        type: string
+        required: true
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
         required: false
-      RUNNER_LABEL:
-        description: Runner label to be used
-        required: true
+
 env:
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   TF_IN_AUTOMATION: "true"
-  RUNNER_LABEL: ${{ secrets.RUNNER_LABEL }}
 
 jobs:
-  setup-correct-runner:
-    runs-on: ubuntu-latest
-    outputs:
-      runner: ${{ steps.check_org_and_platform.outputs.runner }}
-    steps:
-      - name: Check Org and Platform
-        id: check_org_and_platform
-        run: echo "runner=sphtech-platform" >> "$GITHUB_OUTPUT"
   fmt-validate:
     name: Format and Validate
-    needs: setup-correct-runner
     runs-on:
       - self-hosted
-      - ${{ needs.setup-correct-runner.outputs.runner }}
+      - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -124,10 +116,9 @@ jobs:
 
   lint:
     name: Linting
-    needs: setup-correct-runner
     runs-on:
       - self-hosted
-      - ${{ needs.setup-correct-runner.outputs.runner }}
+      - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -210,10 +201,9 @@ jobs:
         #steps.tflint.outcome  check for outcome
   security:
     name: Security Checks
-    needs: setup-correct-runner
     runs-on:
       - self-hosted
-      - ${{ needs.setup-correct-runner.outputs.runner }}
+      - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
