@@ -44,7 +44,7 @@ on:
       default_runner_override_label:
         description: Runner label to point to runners
         type: string
-        default: "ubuntu-latest"
+        default: "self-hosted"
       runner_label:
         description: Runner label to point to runners
         type: string
