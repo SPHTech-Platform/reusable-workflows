@@ -48,7 +48,7 @@ on:
       runner_label:
         description: Runner label to point to runners
         type: string
-        required: true
+        default: "ubuntu-latest"
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
