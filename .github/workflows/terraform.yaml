@@ -41,6 +41,10 @@ on:
         description: Do not fail for tflint warning
         type: boolean
         default: true
+      default_runner_override_label:
+        description: Runner label to point to runners
+        type: string
+        default: "ubuntu-latest"
       runner_label:
         description: Runner label to point to runners
         type: string
@@ -58,7 +62,7 @@ jobs:
   fmt-validate:
     name: Format and Validate
     runs-on:
-      - self-hosted
+      - ${{ inputs.default_runner_override_label }}
       - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
@@ -116,7 +120,7 @@ jobs:
   lint:
     name: Linting
     runs-on:
-      - ubuntu-latest
+      - ${{ inputs.default_runner_override_label }}
       - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
@@ -201,7 +205,7 @@ jobs:
   security:
     name: Security Checks
     runs-on:
-      - self-hosted
+      - ${{ inputs.default_runner_override_label }}
       - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
