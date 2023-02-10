@@ -42,11 +42,11 @@ on:
         type: boolean
         default: true
       default_runner_override_label:
-        description: Runner label to point to runners
+        description: Change this to self-hosted for using self-hosted runners
         type: string
         default: "ubuntu-latest"
       runner_label:
-        description: Runner label to point to runners
+        description: Runner label to point to self hosted runners
         type: string
         default: "ubuntu-latest"
     secrets:
