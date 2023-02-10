@@ -116,7 +116,7 @@ jobs:
   lint:
     name: Linting
     runs-on:
-      - self-hosted
+      - ubuntu-latest
       - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
