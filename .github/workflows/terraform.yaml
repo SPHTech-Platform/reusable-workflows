@@ -49,6 +49,10 @@ on:
         description: Runner label to point to self hosted runners
         type: string
         default: "ubuntu-latest"
+      scan_all_for_tflint:
+        description: Boolean flag for scanning all codes for tflint
+        type: boolean
+        default: false
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
@@ -184,17 +188,28 @@ jobs:
           branch: ${{ github.ref_name }}
           main_branch: ${{ inputs.main_branch }}
 
-      - name: precommit run tflint hooks
-        id: precommit_run_hooks
+      - name: precommit run tflint hooks for all files
+        id: precommit_run_hooks_all
         uses: pre-commit/action@v3.0.0
         continue-on-error: true
+        if: inputs.scan_all_for_tflint == true
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
 
+      - name: precommit run tflint hooks for changed files only
+        id: precommit_run_hooks_changed_files
+        uses: pre-commit/action@v3.0.0
+        continue-on-error: false
+        if: inputs.scan_all_for_tflint == false
+        env:
+          SKIP: ${{ steps.precommit_skips.outputs.skips }}
+        with:
+          extra_args: --color=always --show-diff-on-failure --from-ref origin/HEAD --to-ref HEAD
+
       - name: Check status code
-        if: steps.precommit_run_hooks.outcome == 'failure'
+        if: steps.precommit_run_hooks_changed_files.outcome == 'failure'
         run: |
           # SKIP_WARN for skipping all warnings
           skip_warn="${{ inputs.skip_tflint_warn }}"
