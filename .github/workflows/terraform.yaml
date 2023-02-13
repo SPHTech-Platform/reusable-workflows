@@ -134,11 +134,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
 
-      # - name: Git Fetch
-      #   run: git fetch origin main:refs/remotes/origin/main
+      - name: Git Fetch
+        run: git fetch origin main:refs/remotes/origin/main
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
