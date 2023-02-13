@@ -134,7 +134,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          fetch-depth: 0
           submodules: ${{ inputs.enable_submodules }}
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
