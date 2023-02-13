@@ -209,7 +209,7 @@ jobs:
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         with:
-          extra_args: --color=always --show-diff-on-failure --from-ref ${{ github.head_ref }} --to-ref ${{ github.base_ref }}
+          extra_args: --color=always --show-diff-on-failure --from-ref ${{ github.head_ref }} --to-ref origin/${{ github.base_ref }}
 
       - name: Check status code
         if: steps.precommit_run_hooks_changed_files.outcome == 'failure'
