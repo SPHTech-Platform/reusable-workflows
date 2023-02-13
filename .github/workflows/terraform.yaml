@@ -137,6 +137,9 @@ jobs:
           fetch-depth: 0
           submodules: ${{ inputs.enable_submodules }}
 
+      # - name: Git Fetch
+      #   run: git fetch origin main:refs/remotes/origin/main
+
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
         uses: actions/cache@v3
