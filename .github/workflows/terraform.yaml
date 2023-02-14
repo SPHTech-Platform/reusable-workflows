@@ -87,7 +87,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.tflint.d/plugins
-          key: ${{ matrix.os }}-tflint-${{ hashFiles('**/.tflint.hcl') }}
+          key: ${{ matrix.target }}-tflint-${{ hashFiles('**/.tflint.hcl') }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
