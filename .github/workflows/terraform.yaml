@@ -83,6 +83,11 @@ jobs:
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+      - name: Cache TFLint plugin dir
+        uses: actions/cache@v3
+        with:
+          path: ~/.tflint.d/plugins
+          key: ${{ runner.os }}-tflint-${{ hashFiles('**/.tflint.hcl') }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -192,6 +197,7 @@ jobs:
         continue-on-error: true
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
 
