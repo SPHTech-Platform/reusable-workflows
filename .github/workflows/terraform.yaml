@@ -199,7 +199,7 @@ jobs:
           branch: ${{ github.ref_name }}
           main_branch: ${{ inputs.main_branch }}
 
-      - name: precommit run tflint hooks
+      - name: precommit run tflint hooks for only changed files
         id: precommit_run_hooks
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
