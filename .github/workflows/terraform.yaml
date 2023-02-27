@@ -41,6 +41,10 @@ on:
         description: Do not fail for tflint warning
         type: boolean
         default: true
+      pre_commit_run_all:
+        description: To run precommit checks for all files or not
+        type: boolean
+        default: false
       default_runner_override_label:
         description: Change this to "self-hosted" or "ubuntu-latest"
         type: string
@@ -129,12 +133,23 @@ jobs:
 
       - name: precommit run hooks for only changed files
         id: precommit_run_hooks
+        if: inputs.pre_commit_run_all == false
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         run: |
           pip install pre-commit
           git fetch origin
           pre-commit run --from-ref origin/${{ github.event.pull_request.base.ref }} --to-ref ${{ github.event.pull_request.head.sha }} --color=always --show-diff-on-failure --all-files
+
+      - name: precommit run tflint hooks
+        id: precommit_run_hooks_all
+        if: inputs.pre_commit_run_all
+        uses: pre-commit/action@v3.0.0
+        continue-on-error: true
+        env:
+          SKIP: ${{ steps.precommit_skips.outputs.skips }}
+        with:
+          extra_args: --color=always --show-diff-on-failure --all-files
 
   lint:
     name: Linting
@@ -201,12 +216,23 @@ jobs:
 
       - name: precommit run tflint hooks for only changed files
         id: precommit_run_hooks
+        if: inputs.pre_commit_run_all == false
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         run: |
           pip install pre-commit
           git fetch origin
           pre-commit run --from-ref origin/${{ github.event.pull_request.base.ref }} --to-ref ${{ github.event.pull_request.head.sha }} --color=always --show-diff-on-failure --all-files
+
+      - name: precommit run tflint hooks
+        id: precommit_run_hooks_all
+        if: inputs.pre_commit_run_all
+        uses: pre-commit/action@v3.0.0
+        continue-on-error: true
+        env:
+          SKIP: ${{ steps.precommit_skips.outputs.skips }}
+        with:
+          extra_args: --color=always --show-diff-on-failure --all-files
 
       - name: Check status code
         if: steps.precommit_run_hooks.outcome == 'failure'

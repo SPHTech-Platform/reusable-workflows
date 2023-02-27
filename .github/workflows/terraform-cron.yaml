@@ -197,7 +197,6 @@ jobs:
         continue-on-error: true
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
 
