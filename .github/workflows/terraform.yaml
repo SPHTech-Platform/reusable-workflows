@@ -222,7 +222,7 @@ jobs:
         run: |
           pip install pre-commit
           git fetch origin
-          pre-commit run --from-ref origin/${{ github.base_ref }} --to-ref ${{ github.event.pull_request.head.sha && github.event.pull_request.head.sha || github.event.merge_group.head.sha }} --color=always --show-diff-on-failure
+          pre-commit run --from-ref origin/${{ github.base_ref }} --to-ref ${{ github.event.pull_request.head.sha }} --color=always --show-diff-on-failure
 
       - name: precommit run tflint hooks
         id: precommit_run_hooks_all
