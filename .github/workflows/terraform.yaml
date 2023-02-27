@@ -41,10 +41,6 @@ on:
         description: Do not fail for tflint warning
         type: boolean
         default: true
-      pre_commit_run_all:
-        description: To run precommit checks for all files or not
-        type: boolean
-        default: false
       default_runner_override_label:
         description: Change this to "self-hosted" or "ubuntu-latest"
         type: string
@@ -105,15 +101,6 @@ jobs:
       - name: Terraform init
         run: terraform init
 
-      - name: set PY for precommit cache
-        run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> "$GITHUB_ENV"
-
-      - name: Cache Pre-commit
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pre-commit
-          key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
-
       - name: Precommit Skips
         id: precommit_skips
         run: |
@@ -131,25 +118,15 @@ jobs:
           branch: ${{ github.ref_name }}
           main_branch: ${{ inputs.main_branch }}
 
-      - name: precommit run hooks for only changed files
+      - name: precommit run hooks
         id: precommit_run_hooks
-        if: inputs.pre_commit_run_all == false
-        env:
-          SKIP: ${{ steps.precommit_skips.outputs.skips }}
-        run: |
-          pip install pre-commit
-          git fetch origin
-          pre-commit run --from-ref origin/${{ github.base_ref }} --to-ref ${{ github.sha }} --color=always --show-diff-on-failure
-
-      - name: precommit run tflint hooks
-        id: precommit_run_hooks_all
-        if: inputs.pre_commit_run_all
         uses: pre-commit/action@v3.0.0
-        continue-on-error: true
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
+
+      - run: terraform -v
 
   lint:
     name: Linting
@@ -214,23 +191,13 @@ jobs:
           branch: ${{ github.ref_name }}
           main_branch: ${{ inputs.main_branch }}
 
-      - name: precommit run tflint hooks for only changed files
-        id: precommit_run_hooks
-        if: inputs.pre_commit_run_all == false
-        env:
-          SKIP: ${{ steps.precommit_skips.outputs.skips }}
-        run: |
-          pip install pre-commit
-          git fetch origin
-          pre-commit run --from-ref origin/${{ github.base_ref }} --to-ref ${{ github.sha }} --color=always --show-diff-on-failure
-
       - name: precommit run tflint hooks
-        id: precommit_run_hooks_all
-        if: inputs.pre_commit_run_all
+        id: precommit_run_hooks
         uses: pre-commit/action@v3.0.0
         continue-on-error: true
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
 
