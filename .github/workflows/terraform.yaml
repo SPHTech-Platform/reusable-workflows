@@ -135,7 +135,7 @@ jobs:
           then
             pre-commit run --from-ref origin/${{ github.base_ref }} --to-ref ${{ github.event.pull_request.head.sha }} --color=always --show-diff-on-failure
           else
-            pre-commit run --from-ref origin/main --to-ref "$GITHUB_SHA" --color=always --show-diff-on-failure
+            pre-commit run --from-ref origin/${{ github.event.repository.default_branch }} --to-ref "$GITHUB_SHA" --color=always --show-diff-on-failure
           fi
 
       - name: precommit run tflint hooks
@@ -225,7 +225,7 @@ jobs:
           then
             pre-commit run --from-ref origin/${{ github.base_ref }} --to-ref ${{ github.event.pull_request.head.sha }} --color=always --show-diff-on-failure
           else
-            pre-commit run --from-ref origin/main --to-ref "$GITHUB_SHA" --color=always --show-diff-on-failure
+            pre-commit run --from-ref origin/${{ github.event.repository.default_branch }} --to-ref "$GITHUB_SHA" --color=always --show-diff-on-failure
           fi
 
       - name: precommit run tflint hooks
