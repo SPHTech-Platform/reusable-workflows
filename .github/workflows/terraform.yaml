@@ -220,6 +220,7 @@ jobs:
 
       - name: precommit run tflint hooks
         id: precommit_run_hooks_all
+        if: inputs.pre_commit_run_all
         uses: pre-commit/action@v3.0.0
         continue-on-error: true
         env:
