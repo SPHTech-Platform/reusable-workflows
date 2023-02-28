@@ -49,6 +49,10 @@ on:
         description: Runner label to point to self hosted runners
         type: string
         default: "ubuntu-latest"
+      pre_commit_run_all:
+        description: Runner label to point to self hosted runners
+        type: boolean
+        default: false
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
@@ -66,6 +70,7 @@ env:
 
 jobs:
   fmt-validate:
+    if: github.ref_name != 'main'
     name: Format and Validate
     runs-on:
       - ${{ inputs.default_runner_override_label }}
@@ -120,6 +125,22 @@ jobs:
 
       - name: precommit run hooks
         id: precommit_run_hooks
+        if: inputs.pre_commit_run_all == false
+        env:
+          SKIP: ${{ steps.precommit_skips.outputs.skips }}
+        run: |
+          pip install pre-commit
+          git fetch origin
+          if [ "$GITHUB_EVENT_NAME" == 'pull_request' ]
+          then
+            pre-commit run --from-ref origin/${{ github.base_ref }} --to-ref ${{ github.event.pull_request.head.sha }} --color=always --show-diff-on-failure
+          else
+            pre-commit run --from-ref origin/${{ github.event.repository.default_branch }} --to-ref "$GITHUB_SHA" --color=always --show-diff-on-failure
+          fi
+
+      - name: precommit run tflint hooks
+        id: precommit_run_hooks_all
+        if: inputs.pre_commit_run_all
         uses: pre-commit/action@v3.0.0
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
@@ -130,6 +151,7 @@ jobs:
 
   lint:
     name: Linting
+    if: github.ref_name != 'main'
     runs-on:
       - ${{ inputs.default_runner_override_label }}
       - ${{ inputs.runner_label }}
@@ -191,8 +213,24 @@ jobs:
           branch: ${{ github.ref_name }}
           main_branch: ${{ inputs.main_branch }}
 
-      - name: precommit run tflint hooks
+      - name: precommit run tflint hooks for only changed files
         id: precommit_run_hooks
+        if: inputs.pre_commit_run_all == false
+        env:
+          SKIP: ${{ steps.precommit_skips.outputs.skips }}
+        run: |
+          pip install pre-commit
+          git fetch origin
+          if [ "$GITHUB_EVENT_NAME" == 'pull_request' ]
+          then
+            pre-commit run --from-ref origin/${{ github.base_ref }} --to-ref ${{ github.event.pull_request.head.sha }} --color=always --show-diff-on-failure
+          else
+            pre-commit run --from-ref origin/${{ github.event.repository.default_branch }} --to-ref "$GITHUB_SHA" --color=always --show-diff-on-failure
+          fi
+
+      - name: precommit run tflint hooks
+        id: precommit_run_hooks_all
+        if: inputs.pre_commit_run_all
         uses: pre-commit/action@v3.0.0
         continue-on-error: true
         env:
@@ -216,6 +254,7 @@ jobs:
         #steps.tflint.outcome  check for outcome
   security:
     name: Security Checks
+    if: github.ref_name != 'main'
     runs-on:
       - ${{ inputs.default_runner_override_label }}
       - ${{ inputs.runner_label }}
