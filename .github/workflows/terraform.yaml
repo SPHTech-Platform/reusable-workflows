@@ -219,14 +219,14 @@ jobs:
           main_branch: ${{ inputs.main_branch }}
 
       - name: precommit run tflint hooks for only changed files
-        id: precommit_run_hooks
+        id: precommit_run_hooks #Run on all PRs from the same repo, fork repos to run all
         if: inputs.pre_commit_run_all == false
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         run: |
           pip install pre-commit
           git fetch origin
-           if [ "$GITHUB_EVENT_NAME" == 'pull_request' ]
+          if [ "$GITHUB_EVENT_NAME" == 'pull_request' ]
           then
             if [ ${{ github.event.pull_request.head.repo.full_name }} == ${{ github.repository }} ]
             then
