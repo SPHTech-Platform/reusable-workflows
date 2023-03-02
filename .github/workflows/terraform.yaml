@@ -133,7 +133,7 @@ jobs:
           git fetch origin
           if [ "$GITHUB_EVENT_NAME" == 'pull_request' ]
           then
-            if [ ${{ github.event.pull_request.head.repo.full_name }} == ${{ github.repository }} ]
+            if [ ${{ github.event.pull_request.head.repo.full_name }} == "$GITHUB_REPOSITORY" ]
             then
               pre-commit run --from-ref origin/${{ github.base_ref }} --to-ref ${{ github.event.pull_request.head.sha }} --color=always --show-diff-on-failure
             else
