@@ -81,7 +81,7 @@ jobs:
         run: ${{ inputs.pre_init_hook }}
 
       - name: Terraform init
-        run: terraform init
+        run: terraform init -upgrade
 
       - name: Precommit Skips
         id: precommit_skips
