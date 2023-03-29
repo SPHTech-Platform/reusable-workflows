@@ -96,7 +96,7 @@ jobs:
           
       - name: Setup Node only for self-hosted runners
         uses: actions/setup-node@v3
-        if: inputs.default_runner_override_label == self-hosted
+        if: ${{ inputs.default_runner_override_label == 'self-hosted' }}
         with:
           node-version: 19
 
