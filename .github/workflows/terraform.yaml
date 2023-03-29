@@ -93,6 +93,12 @@ jobs:
         with:
           path: ~/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('**/.tflint.hcl') }}
+          
+      - name: Setup Node only for self-hosted runners
+        uses: actions/setup-node@v3
+        if: inputs.default_runner_override_label == "self-hosted"
+        with:
+          node-version: 16
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
