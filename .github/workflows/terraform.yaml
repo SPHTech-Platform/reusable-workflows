@@ -223,6 +223,12 @@ jobs:
         env:
           branch: ${{ github.ref_name }}
           main_branch: ${{ inputs.main_branch }}
+          
+      - name: Setup Node only for self-hosted runners
+        uses: actions/setup-node@v3
+        if: ${{ inputs.default_runner_override_label == 'self-hosted' }}
+        with:
+          node-version: 19
 
       - name: precommit run tflint hooks for only changed files
         id: precommit_run_hooks #Run on all PRs from the same repo, fork repos to run all
