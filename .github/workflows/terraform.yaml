@@ -41,6 +41,10 @@ on:
         description: Do not fail for tflint warning
         type: boolean
         default: true
+      skip_tflint_warn_for_changed_files:
+        description: Do not fail for tflint warning
+        type: boolean
+        default: false
       default_runner_override_label:
         description: Change this to "self-hosted" or "ubuntu-latest"
         type: string
@@ -233,7 +237,7 @@ jobs:
       - name: precommit run tflint hooks for only changed files
         id: precommit_run_hooks #Run on all PRs from the same repo, fork repos to run all
         if: inputs.pre_commit_run_all == false
-        continue-on-error: true
+        continue-on-error: ${{ inputs.skip_tflint_warn_for_changed_files }}
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         run: |
