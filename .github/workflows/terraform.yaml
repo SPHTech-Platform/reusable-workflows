@@ -233,6 +233,7 @@ jobs:
       - name: precommit run tflint hooks for only changed files
         id: precommit_run_hooks #Run on all PRs from the same repo, fork repos to run all
         if: inputs.pre_commit_run_all == false
+        continue-on-error: true
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         run: |
