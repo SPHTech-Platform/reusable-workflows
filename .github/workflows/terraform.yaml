@@ -42,7 +42,7 @@ on:
         type: boolean
         default: true
       skip_tflint_warn_for_changed_files:
-        description: Do not fail for tflint warning
+        description: Enforce tflint warnings for changed files by default
         type: boolean
         default: false
       default_runner_override_label:
