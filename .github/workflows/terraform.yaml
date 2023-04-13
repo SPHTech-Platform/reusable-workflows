@@ -85,6 +85,11 @@ jobs:
         with:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
+      
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
@@ -176,6 +181,11 @@ jobs:
         with:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
+      
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
