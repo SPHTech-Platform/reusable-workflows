@@ -64,14 +64,18 @@ jobs:
         run: |
            {
             echo "sdk.dir=/opt/android"
-            echo "GITHUB_USERNAME=$GITHUB_ACTOR"
-            echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}"
+            echo "GITHUB_TOKEN=${{ secrets.PACKAGE_READ_TOKEN }}"
+            echo "GITHUB_USERNAME=${{ secrets.PACKAGE_READ_USERNAME }}"
            } >> ./local.properties
            sourceanalyzer -b "$BUILD_ID" -clean
         env:
           BUILD_ID: ${{ inputs.BUILD_ID }}
           PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
           #  cat ./local.properties
+          
+        #   Legacy reference  
+        #   echo "GITHUB_USERNAME=$GITHUB_ACTOR"
+        #   echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}"
 
       ### Start Fortify Translation ###
       - name: Translate Code for Android Fortify Scan
