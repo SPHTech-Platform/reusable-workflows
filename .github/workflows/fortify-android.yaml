@@ -72,8 +72,8 @@ jobs:
           BUILD_ID: ${{ inputs.BUILD_ID }}
           PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
           #  cat ./local.properties
-          
-        #   Legacy reference  
+
+        #   Legacy reference
         #   echo "GITHUB_USERNAME=$GITHUB_ACTOR"
         #   echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}"
 
