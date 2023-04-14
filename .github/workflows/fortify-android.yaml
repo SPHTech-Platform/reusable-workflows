@@ -31,13 +31,21 @@ on:
         type: string
         required: false
         default: "app_bt"
+      default_runner_override_label:
+        description: Change this to "self-hosted" or "ubuntu-latest"
+        type: string
+        default: "ubuntu-latest"
+      runner_label:
+        description: Runner label to point to self hosted runners
+        type: string
+        default: "ubuntu-latest"
 
 jobs:
   FortifySourceAnalyzerAndroid:
     timeout-minutes: 120
     runs-on:
-    - self-hosted
-    - fortify-android
+    - ${{ inputs.default_runner_override_label }}
+    - ${{ inputs.runner_label }}
     steps:
       # Check out source code
       - name: Check Out Source Code
@@ -56,14 +64,18 @@ jobs:
         run: |
            {
             echo "sdk.dir=/opt/android"
-            echo "GITHUB_USERNAME=$GITHUB_ACTOR"
-            echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}"
+            echo "GITHUB_TOKEN=${{ secrets.PACKAGE_READ_TOKEN }}"
+            echo "GITHUB_USERNAME=${{ secrets.PACKAGE_READ_USERNAME }}"
            } >> ./local.properties
            sourceanalyzer -b "$BUILD_ID" -clean
         env:
           BUILD_ID: ${{ inputs.BUILD_ID }}
           PATH: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/opt/Fortify/bin/
           #  cat ./local.properties
+          
+        #   Legacy reference  
+        #   echo "GITHUB_USERNAME=$GITHUB_ACTOR"
+        #   echo "GITHUB_TOKEN=${{ secrets.PAT_TOKEN }}"
 
       ### Start Fortify Translation ###
       - name: Translate Code for Android Fortify Scan

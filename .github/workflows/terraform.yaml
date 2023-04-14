@@ -41,18 +41,44 @@ on:
         description: Do not fail for tflint warning
         type: boolean
         default: true
+      skip_tflint_warn_for_changed_files:
+        description: Enforce tflint warnings for changed files by default
+        type: boolean
+        default: false
+      default_runner_override_label:
+        description: Change this to "self-hosted" or "ubuntu-latest"
+        type: string
+        default: "ubuntu-latest"
+      runner_label:
+        description: Runner label to point to self hosted runners
+        type: string
+        default: "ubuntu-latest"
+      pre_commit_run_all:
+        description: Runner label to point to self hosted runners
+        type: boolean
+        default: false
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
         required: false
+      DOCKERHUB_USERNAME:
+        description: Dockerhub Username
+        required: false
+      DOCKERHUB_TOKEN:
+        description: Dockerhub Token
+        required: false
+
 env:
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   TF_IN_AUTOMATION: "true"
 
 jobs:
   fmt-validate:
+    if: github.ref_name != 'main'
     name: Format and Validate
-    runs-on: ubuntu-latest
+    runs-on:
+      - ${{ inputs.default_runner_override_label }}
+      - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -62,7 +88,7 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: "pypy3.9"
+          python-version: '3.9'
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
@@ -70,6 +96,17 @@ jobs:
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
+      - name: Cache TFLint plugin dir
+        uses: actions/cache@v3
+        with:
+          path: ~/.tflint.d/plugins
+          key: ${{ runner.os }}-tflint-${{ hashFiles('**/.tflint.hcl') }}
+
+      - name: Setup Node only for self-hosted runners
+        uses: actions/setup-node@v3
+        if: ${{ inputs.default_runner_override_label == 'self-hosted' }}
+        with:
+          node-version: 19
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -101,7 +138,28 @@ jobs:
           main_branch: ${{ inputs.main_branch }}
 
       - name: precommit run hooks
-        id: precommit_run_hooks
+        id: precommit_run_hooks #Run on all PRs from the same repo, fork repos to run all
+        if: inputs.pre_commit_run_all == false
+        env:
+          SKIP: ${{ steps.precommit_skips.outputs.skips }}
+        run: |
+          pip install pre-commit
+          git fetch origin
+          if [ "$GITHUB_EVENT_NAME" == 'pull_request' ]
+          then
+            if [ ${{ github.event.pull_request.head.repo.full_name }} == ${{ github.repository }} ]
+            then
+              pre-commit run --from-ref origin/${{ github.base_ref }} --to-ref ${{ github.event.pull_request.head.sha }} --color=always --show-diff-on-failure
+            else
+              pre-commit run --color=always --show-diff-on-failure --all-files
+            fi
+          else
+            pre-commit run --from-ref origin/${{ github.event.repository.default_branch }} --to-ref "$GITHUB_SHA" --color=always --show-diff-on-failure
+          fi
+
+      - name: precommit run tflint hooks
+        id: precommit_run_hooks_all
+        if: inputs.pre_commit_run_all
         uses: pre-commit/action@v3.0.0
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
@@ -112,13 +170,20 @@ jobs:
 
   lint:
     name: Linting
-    runs-on: ubuntu-latest
+    if: github.ref_name != 'main'
+    runs-on:
+      - ${{ inputs.default_runner_override_label }}
+      - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
@@ -145,10 +210,22 @@ jobs:
           tflint_version: "v0.44.1"
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Pre-init Hook
+        run: ${{ inputs.pre_init_hook }}
+
+      - name: set PY for precommit cache
+        run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> "$GITHUB_ENV"
+
+      - name: Cache Pre-commit
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
+
       - name: Precommit Skips
         id: precommit_skips
         run: |
-          SKIPS="shellcheck,terraform_fmt,markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov"
+          SKIPS="shellcheck,terraform_fmt,terraform_providers_lock,markdown-link-check,terraform_docs,terraform_tfsec,checkov,terraform_checkov,terraform_checkov"
           if [ "${branch}" == "${main_branch}" ];then
               SKIPS="${SKIPS},no-commit-to-branch"
           fi
@@ -162,12 +239,41 @@ jobs:
           branch: ${{ github.ref_name }}
           main_branch: ${{ inputs.main_branch }}
 
+      - name: Setup Node only for self-hosted runners
+        uses: actions/setup-node@v3
+        if: ${{ inputs.default_runner_override_label == 'self-hosted' }}
+        with:
+          node-version: 19
+
+      - name: precommit run tflint hooks for only changed files
+        id: precommit_run_hooks #Run on all PRs from the same repo, fork repos to run all
+        if: inputs.pre_commit_run_all == false
+        continue-on-error: ${{ inputs.skip_tflint_warn_for_changed_files }}
+        env:
+          SKIP: ${{ steps.precommit_skips.outputs.skips }}
+        run: |
+          pip install pre-commit
+          git fetch origin
+          if [ "$GITHUB_EVENT_NAME" == 'pull_request' ]
+          then
+            if [ ${{ github.event.pull_request.head.repo.full_name }} == ${{ github.repository }} ]
+            then
+              pre-commit run --from-ref origin/${{ github.base_ref }} --to-ref ${{ github.event.pull_request.head.sha }} --color=always --show-diff-on-failure
+            else
+              pre-commit run --color=always --show-diff-on-failure --all-files
+            fi
+          else
+            pre-commit run --from-ref origin/${{ github.event.repository.default_branch }} --to-ref "$GITHUB_SHA" --color=always --show-diff-on-failure
+          fi
+
       - name: precommit run tflint hooks
-        id: precommit_run_hooks
+        id: precommit_run_hooks_all
+        if: inputs.pre_commit_run_all
         uses: pre-commit/action@v3.0.0
         continue-on-error: true
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
 
@@ -186,13 +292,26 @@ jobs:
         #steps.tflint.outcome  check for outcome
   security:
     name: Security Checks
-    runs-on: ubuntu-latest
+    if: github.ref_name != 'main'
+    runs-on:
+      - ${{ inputs.default_runner_override_label }}
+      - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        if: env.DOCKERHUB_USERNAME != null && env.DOCKERHUB_TOKEN != null
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Run tfsec with reviewdog output on the PR
         uses: reviewdog/action-tfsec@master
@@ -218,7 +337,6 @@ jobs:
 
       - name: Run tfsec
         uses: aquasecurity/tfsec-sarif-action@v0.1.4
-
         with:
           sarif_file: tfsec.sarif
       - name: Upload SARIF file
