@@ -76,11 +76,11 @@ jobs:
       id: set-vars
       run: |
         if [ "${{ inputs.docker_tag_name }}" != "" ]; then
-          echo "file_output=trivy-results-docker.sarif" >> $GITHUB_OUTPUT
+          echo "file_output=trivy-results-docker.sarif" >> "$GITHUB_OUTPUT"
         elif [ "${{ inputs.ecr_image_name }}" != "" ] &&  [ "${{ inputs.aws_account_id }}" != "" ]; then
-          echo "file_output=trivy-results-ecr.sarif" >> $GITHUB_OUTPUT
+          echo "file_output=trivy-results-ecr.sarif" >> "$GITHUB_OUTPUT"
         else
-          echo "file_output=" >> $GITHUB_OUTPUT
+          echo "file_output=" >> "$GITHUB_OUTPUT"
         fi
       shell: bash
 
