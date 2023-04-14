@@ -85,7 +85,7 @@ jobs:
         with:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
-      
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
@@ -180,7 +180,7 @@ jobs:
         with:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
-      
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
