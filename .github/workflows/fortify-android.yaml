@@ -5,8 +5,11 @@ on:
       SSC_CI_TOKEN:
         description: 'CIToken for service account'
         required: true
-      PAT_TOKEN:
+      PACKAGE_READ_TOKEN:
         description: 'User PAT Token - to be removed'
+        required: false
+      PACKAGE_READ_USERNAME:
+        description: 'User name of package user'
         required: false
     inputs:
       APPLICATION:
