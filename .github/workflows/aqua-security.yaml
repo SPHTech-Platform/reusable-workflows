@@ -19,7 +19,7 @@ on:
          default: 'latest'
          required: false
       docker_build_args:
-        description: "Commas separated list of build args with key value (example: ENVIRONMENT=dev,PROFILE=dev )"
+        description: "Multi-Line list of build args with key value"
         type: string
         required: false
         default: ''
