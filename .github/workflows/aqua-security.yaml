@@ -19,7 +19,7 @@ on:
          default: 'latest'
          required: false
       docker_build_args:
-        description: "Commas separated list of build args with key value (example: ENVIRONMENT=dev,PROFILE=dev )"
+        description: "Multi-Line list of build args with key value"
         type: string
         required: false
         default: ''
@@ -53,10 +53,18 @@ on:
         default: 'table'
         required: false
       upload_to_codeql:
-        description: "Upload to CodeQL"
+        description: "Upload SARIF to CodeQL"
         type: boolean
         default: false
         required: false
+      default_runner_override_label:
+        description: "Change this to 'self-hosted' or 'ubuntu-latest'"
+        type: string
+        default: "ubuntu-latest"
+      runner_label:
+        description: "Runner label to point to self hosted runners"
+        type: string
+        default: "ubuntu-latest"
     secrets:
       OAUTH_TOKEN:
         description: Github Token for accessing other dependency private repo
@@ -64,10 +72,11 @@ on:
 
 jobs:
   trivy-scan:
-    runs-on: ubuntu-latest
+    runs-on:
+    - ${{ inputs.default_runner_override_label }}
+    - ${{ inputs.runner_label }}
     permissions:
       contents: read
-      id-token: write
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
