@@ -1,0 +1,34 @@
+name: GitHub Security Alerts for JIRA
+
+on:
+  workflow_call:
+    inputs:
+      jira_watchers:
+        description: JIRA users to add as watchers to tickets. Separate multiple watchers with comma (no spaces).
+        type: string
+        required: true
+    secrets:
+      ORG_GITHUB_TOKEN:
+        description: GitHub Organization Service Account Token
+        required: true
+      JIRA_TOKEN:
+        description: JIRA DevOpsInt User Account Token
+        required: true
+      
+jobs:
+  syncSecurityAlerts:
+    permissions: read-all
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Sync Security Alerts to JIRA Issues"
+        uses: reload/github-security-jira@v1.3.1
+        env:
+          GH_SECURITY_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
+          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+          JIRA_HOST: https://sph.atlassian.net
+          JIRA_USER: devopsint@sph.com.sg
+          JIRA_PROJECT: DD
+          JIRA_ISSUE_TYPE: Bug
+          JIRA_WATCHERS: ${{ inputs.jira.watchers }}
+          JIRA_ISSUE_LABELS: Drupal-Security
+          
