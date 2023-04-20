@@ -18,17 +18,14 @@ on:
       jira_host:
         description: The endpoint for your Jira instance, e.g. https://foo.atlassian.net
         type: string
-        required: true
         default: https://sph.atlassian.net
       jira_user:
         description: The ID of the Jira user which is associated with the 'JiraApiToken' secret, eg 'someuser@sph.com.sg'
         type: string
-        required: true
         default: devopsint@sph.com.sg
       jira_project:
         description: The project key for the Jira project where issues should be created, eg TEST or UAT
         type: string
-        required: true
         default: DD
       jira_issue_type:
         description: Type of issue to create, e.g. Security. Defaults to Bug.
