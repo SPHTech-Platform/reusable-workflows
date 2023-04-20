@@ -7,6 +7,37 @@ on:
         description: JIRA users to add as watchers to tickets. Separate multiple watchers with comma (no spaces).
         type: string
         required: true
+      default_runner_override_label:
+        description: Change this to "self-hosted" or "ubuntu-latest"
+        type: string
+        default: "ubuntu-latest"
+      runner_label:
+        description: Runner label to point to self hosted runners
+        type: string
+        default: "ubuntu-latest"
+      jira_host:
+        description: The endpoint for your Jira instance, e.g. https://foo.atlassian.net
+        type: string
+        required: true
+        default: https://sph.atlassian.net
+      jira_user:
+        description: The ID of the Jira user which is associated with the 'JiraApiToken' secret, eg 'someuser@sph.com.sg'
+        type: string
+        required: true
+        default: devopsint@sph.com.sg
+      jira_project:
+        description: The project key for the Jira project where issues should be created, eg TEST or UAT
+        type: string
+        required: true
+        default: DD
+      jira_issue_type:
+        description: Type of issue to create, e.g. Security. Defaults to Bug.
+        type: string
+        default: Bug
+      jira_issue_labels:
+        description: Jira labels to add to tickets. Separate multiple labels with comma (no spaces).
+        type: string
+        default: Drupal-Security
     secrets:
       ORG_GITHUB_TOKEN:
         description: GitHub Organization Service Account Token
@@ -18,16 +49,18 @@ on:
 jobs:
   syncSecurityAlerts:
     permissions: read-all
-    runs-on: ubuntu-latest
+    runs-on:
+      - ${{ inputs.default_runner_override_label }}
+      - ${{ inputs.runner_label }}
     steps:
       - name: "Sync Security Alerts to JIRA Issues"
         uses: reload/github-security-jira@v1.3.1
         env:
           GH_SECURITY_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
           JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
-          JIRA_HOST: https://sph.atlassian.net
-          JIRA_USER: devopsint@sph.com.sg
-          JIRA_PROJECT: DD
-          JIRA_ISSUE_TYPE: Bug
+          JIRA_HOST: ${{ inputs.jira_host }}
+          JIRA_USER: ${{ inputs.jira_user }}
+          JIRA_PROJECT: ${{ inputs.jira_project }}
+          JIRA_ISSUE_TYPE: ${{ inputs.jira_issue_type }}
           JIRA_WATCHERS: ${{ inputs.jira_watchers }}
-          JIRA_ISSUE_LABELS: Drupal-Security
+          JIRA_ISSUE_LABELS: ${{ inputs.jira_issue_labels }}
