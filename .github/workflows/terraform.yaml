@@ -111,9 +111,6 @@ jobs:
       - name: Pre-init Hook
         run: ${{ inputs.pre_init_hook }}
 
-      - name: Terraform init
-        run: terraform init
-
       - name: Precommit Skips
         id: precommit_skips
         run: |
@@ -212,9 +209,6 @@ jobs:
 
       - name: Pre-init Hook
         run: ${{ inputs.pre_init_hook }}
-        
-      - name: Terraform init
-        run: terraform init
 
       - name: set PY for precommit cache
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> "$GITHUB_ENV"
