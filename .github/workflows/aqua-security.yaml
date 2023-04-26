@@ -61,10 +61,27 @@ on:
         description: "Change this to 'self-hosted' or 'ubuntu-latest'"
         type: string
         default: "ubuntu-latest"
+        required: false
       runner_label:
         description: "Runner label to point to self hosted runners"
         type: string
         default: "ubuntu-latest"
+        required: false
+      scan_type:
+        description: "Scan Type to be scanned"
+        type: string
+        default: 'docker'
+        required: false
+      scan_reference:
+        description: "Scan reference(e.g. /github/workspace/ or .)"
+        type: string
+        default: "/github/workspace/"
+        required: false
+      skip_directories:
+        description: "Comma separated list of directories where traversal is skipped"
+        type: string
+        default: ""
+        required: false
     secrets:
       OAUTH_TOKEN:
         description: Github Token for accessing other dependency private repo
@@ -89,7 +106,7 @@ jobs:
         elif [ "${{ inputs.ecr_image_name }}" != "" ] &&  [ "${{ inputs.aws_account_id }}" != "" ]; then
           echo "file_output=trivy-results-ecr.sarif" >> "$GITHUB_OUTPUT"
         else
-          echo "file_output=" >> "$GITHUB_OUTPUT"
+          echo "file_output=trivy-results-fs.sarif" >> $GITHUB_OUTPUT
         fi
       shell: bash
 
@@ -132,6 +149,18 @@ jobs:
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH,MEDIUM'
       if: ${{ inputs.docker_tag_name !='' }}
+
+    - name: Run Trivy vulnerability scanner in repo mode
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: ${{ inputs.scan_reference }}
+        ignore-unfixed: false
+        format: ${{ inputs.trivy_format }}
+        output: ${{ inputs.upload_to_codeql && steps.set-vars.outputs.file_output || '' }}
+        severity: 'HIGH,CRITICAL,MEDIUM'
+        skip-dirs: ${{ inputs.skip_directories }}
+      if: ${{ inputs.scan_type == 'fs' }}
 
     - name: Upload Trivy scan results to GitHub Security tab
       uses: github/codeql-action/upload-sarif@v2
