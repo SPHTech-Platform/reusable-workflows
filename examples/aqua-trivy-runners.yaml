@@ -16,7 +16,7 @@ jobs:
       # only required for workflows in private repositories
       actions: read
       contents: read
-    uses: SPHTech-Platform/reusable-workflows/.github/workflows/aqua-security.yaml@main
+    uses: SPHTech-Platform/reusable-workflows/.github/workflows/aqua-security.yaml@v2
     with:
       docker_file: <docker-file-path>
       docker_tag_name: <docker-tag-name>
@@ -34,7 +34,7 @@ jobs:
       # only required for workflows in private repositories
       actions: read
       contents: read
-    uses: SPHTech-Platform/reusable-workflows/.github/workflows/aqua-security.yaml@main
+    uses: SPHTech-Platform/reusable-workflows/.github/workflows/aqua-security.yaml@v2
     with:
       aws_account_id: <aws-account-id>
       aws_account_region: <aws-account-region>
@@ -53,7 +53,7 @@ jobs:
       # only required for workflows in private repositories
       actions: read
       contents: read
-    uses: SPHTech-Platform/reusable-workflows/.github/workflows/aqua-security.yaml@main
+    uses: SPHTech-Platform/reusable-workflows/.github/workflows/aqua-security.yaml@v2
     with:
       scan_type: 'fs'
       scan_reference: <folder-to-scan> # default its /github/workspace/ or .
