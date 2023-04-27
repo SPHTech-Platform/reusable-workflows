@@ -75,7 +75,7 @@ on:
       scan_reference:
         description: "Scan reference(e.g. /github/workspace/ or .)"
         type: string
-        default: "/github/workspace/"
+        default: "."
         required: false
       skip_directories:
         description: "Comma separated list of directories where traversal is skipped"
