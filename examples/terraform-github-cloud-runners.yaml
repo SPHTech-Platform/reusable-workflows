@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   ci:
-    uses: SPHTech-Platform/reusable-workflows/.github/workflows/terraform.yaml@feat/test-public
+    uses: SPHTech-Platform/reusable-workflows/.github/workflows/terraform.yaml@v2
     with:
       upload_sarif: false
     secrets: inherit
