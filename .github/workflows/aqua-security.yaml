@@ -150,7 +150,7 @@ jobs:
         severity: 'CRITICAL,HIGH,MEDIUM'
       if: ${{ inputs.docker_tag_name !='' }}
 
-    - name: Run Trivy vulnerability scanner in repo mode
+    - name: Run Trivy vulnerability scanner for Github Repo
       uses: aquasecurity/trivy-action@master
       with:
         scan-type: 'fs'
