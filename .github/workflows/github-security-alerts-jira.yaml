@@ -42,7 +42,7 @@ on:
       JIRA_TOKEN:
         description: JIRA DevOpsInt User Account Token
         required: true
-      
+
 jobs:
   syncSecurityAlerts:
     permissions: read-all

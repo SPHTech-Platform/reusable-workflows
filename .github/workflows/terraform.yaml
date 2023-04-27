@@ -200,7 +200,7 @@ jobs:
         with:
           tflint_version: "v0.44.1"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Setup Node only for self-hosted runners
         uses: actions/setup-node@v3
         if: ${{ inputs.default_runner_override_label == 'self-hosted' }}

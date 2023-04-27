@@ -1,0 +1,63 @@
+name: aqua-trivy-runners
+on:
+  pull_request:
+    branches:
+    - dev
+  push:
+    branches:
+    - dev
+
+jobs:
+  scan-docker-container:
+    name: Trivy Scan for scanning Docker Container
+    permissions:
+      # required for all workflows
+      security-events: write
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+    uses: SPHTech-Platform/reusable-workflows/.github/workflows/aqua-security.yaml@v2
+    with:
+      docker_file: <docker-file-path>
+      docker_tag_name: <docker-tag-name>
+      docker_build_args: |
+        <docker-build-args>
+      trivy_format: <trivy-scan-format> #default the format is table.Possible options [table, json, sarif, github]
+      upload_to_codeql: <true|false> #If needed to upload the sarif report to CodeQL
+    secrets:
+      oauth_token: ${{ secrets.ORG_GITHUB_TOKEN }}
+  scan-ecr-repo:
+    name: Trivy Scan for scanning ECR Repo
+    permissions:
+      # required for all workflows
+      security-events: write
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+    uses: SPHTech-Platform/reusable-workflows/.github/workflows/aqua-security.yaml@v2
+    with:
+      aws_account_id: <aws-account-id>
+      aws_account_region: <aws-account-region>
+      aws_iam_role_arn: <aws-iam-role-arn>
+      trivy_format: <trivy-scan-format> #default the format is table.Possible options [table, json, sarif, github]
+      upload_to_codeql: <true|false> #If needed to upload the sarif report to CodeQL
+      ecr_image_name: <aws-ecr-repo-uri>
+      ecr_tag_version: <aws-ecr-tag-to-scan>
+    secrets:
+      oauth_token: ${{ secrets.ORG_GITHUB_TOKEN }}
+  scan-github-repo:
+    name: Trivy Scan for scanning Github Repo
+    permissions:
+      # required for all workflows
+      security-events: write
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+    uses: SPHTech-Platform/reusable-workflows/.github/workflows/aqua-security.yaml@v2
+    with:
+      scan_type: 'fs'
+      scan_reference: <folder-to-scan> # default its /github/workspace/ or .
+      trivy_format: <trivy-scan-format> #default the format is table.Possible options [table, json, sarif, github]
+      upload_to_codeql: <true|false> #If needed to upload the sarif report to CodeQL
+    secrets:
+      oauth_token: ${{ secrets.ORG_GITHUB_TOKEN }}
