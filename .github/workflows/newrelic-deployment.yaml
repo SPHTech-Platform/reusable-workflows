@@ -1,0 +1,67 @@
+name: newrelic-deployment-marker
+on:
+  workflow_call:
+    inputs:
+      app_name:
+        description: Name of the application. Entity GUID, Unique identifier of the New Relic entity (APM, Browser, Synthetics) to which the deployment belongs. GUID needs to be added as secret - NEW_RELIC_DEPLOYMENT_ENTITY_GUID_{{APP_NAME}}
+        type: string
+        required: true
+      version:
+        description: Version of the deployment. Commit id will be used as default value, if not provided
+        type: string
+        required: false
+        default: "${{ github.sha }}"
+      changelog:
+        description: A summary of what changed in this deployment, visible in the Deployments page. Defaults to releases page.
+        type: string
+        required: false
+        default: "${{ format('{0}/{1}/releases',github.server_url, github.repository) }}"
+      description:
+        description: A high-level description of this deployment, visible in the Overview page and on the Deployments page when you select an individual deployment
+        type: string
+        required: false
+        default: |
+           Deployed by ${{ github.actor }} via GitHub Actions
+           Branch: ${{ github.ref_name }}
+           Message: ${{ github.event.head_commit.message }}
+           Repo : "${{ github.repository }}"
+           Url: "${{ format('{0}/{1}',github.server_url, github.repository) }}"
+      deployer:
+        description: The name of the user or service that triggered this deployment
+        type: string
+        required: false
+        default: ${{ github.actor }}
+      deeplink:
+        description: A deep link to the source which triggered the deployment
+        type: string
+        required: false
+        default: "${{ format('{0}/{1}',github.server_url, github.repository) }}"
+      deploymentType:
+        description: The type of deployment. Besides the default of BASIC, choose from BLUE_GREEN, CANARY, OTHER, ROLLING, or SHADOW
+        type: string
+        required: false
+        default: BASIC
+    secrets:
+        NEW_RELIC_API_KEY:
+            description: Newrelic API Key
+            required: false
+
+jobs:
+    set-deployment-marker:
+        runs-on: ubuntu-latest
+        name: Set newrelic deployment marker
+        steps:
+        - name: Sets deployment marker
+          uses: newrelic/deployment-marker-action@v2.3.0
+          with:
+            apiKey: ${{ secrets.NEW_RELIC_API_KEY }}
+            region: "US"
+            guid: ${{ secrets[format('NEW_RELIC_DEPLOYMENT_ENTITY_GUID_{0}', inputs.app_name )] }}
+            version: "${{ inputs.version }}"
+            description: ${{ inputs.description }}
+            changelog: "${{ inputs.changelog }}"
+            commit: "${{ github.sha }}"
+            deploymentType: "${{ inputs.deploymentType }}"
+            user: "${{ inputs.deployer }}"
+        - name: Print deployment id
+          run: echo "${{ env.deploymentId }}"

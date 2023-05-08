@@ -1,0 +1,17 @@
+name: newrelic-deployment
+on:
+  push:
+    branches:
+      - main
+jobs:
+  newrelic-deployment1:
+    uses: SPHTech-Platform/reusable-workflows/.github/workflows/newrelic-deployment.yaml@v2
+    with:
+        app_name: APP1
+    secrets: inherit
+  newrelic-deployment2:
+    uses: SPHTech-Platform/reusable-workflows/.github/workflows/newrelic-deployment.yaml@v2
+    with:
+        app_name: APP2
+        deploymentType: BLUE_GREEN
+    secrets: inherit
