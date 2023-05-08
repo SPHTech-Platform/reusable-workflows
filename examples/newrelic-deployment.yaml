@@ -7,11 +7,11 @@ jobs:
   newrelic-deployment1:
     uses: SPHTech-Platform/reusable-workflows/.github/workflows/newrelic-deployment.yaml@v2
     with:
-        app_name: APP1
+        app_name: APP1 # Expects NEW_RELIC_DEPLOYMENT_ENTITY_GUID_APP1 secret to be present in the repo
     secrets: inherit
   newrelic-deployment2:
     uses: SPHTech-Platform/reusable-workflows/.github/workflows/newrelic-deployment.yaml@v2
     with:
-        app_name: APP2
+        app_name: APP2 # Expects NEW_RELIC_DEPLOYMENT_ENTITY_GUID_APP2 secret to be present in the repo
         deploymentType: BLUE_GREEN
     secrets: inherit
