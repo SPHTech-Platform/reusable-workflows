@@ -195,6 +195,12 @@ jobs:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
 
+      - name: Setup Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'latest'
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Cache TFlint
         uses: actions/cache@v3
         with:
