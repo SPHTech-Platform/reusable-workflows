@@ -54,7 +54,7 @@ on:
         type: string
         default: "ubuntu-latest"
       pre_commit_run_all:
-        description: Runner label to point to self hosted runners
+        description: Run pre-commit against all files
         type: boolean
         default: false
     secrets:
@@ -254,6 +254,7 @@ jobs:
         continue-on-error: ${{ inputs.skip_tflint_warn_for_changed_files }}
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pip install pre-commit
           git fetch origin
