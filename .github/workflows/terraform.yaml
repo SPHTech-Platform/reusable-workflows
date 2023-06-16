@@ -322,7 +322,7 @@ jobs:
 
       - name: Run Checkov action
         id: checkov
-        uses: bridgecrewio/checkov-action@v12.2393.0
+        uses: bridgecrewio/checkov-action@27a9087
         with:
           output_format: sarif
           quiet: ${{ inputs.checkov_output_quiet }}
