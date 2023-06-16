@@ -22,7 +22,7 @@ on:
         type: string
         default: true
         required: false
-      checkov_download_external_modules :
+      checkov_download_external_modules:
         description: Download external modules
         type: boolean
         default: false
