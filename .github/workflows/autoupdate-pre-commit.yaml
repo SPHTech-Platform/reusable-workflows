@@ -1,0 +1,21 @@
+name: Pre-commit auto-update
+
+on:
+  # every sunday at midnight
+  schedule:
+    - cron: "0 0 * * 0"
+  # on demand
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  checks: read
+  contents: write #require this to write to repo
+  pull-requests: write #require this to create PR
+
+jobs:
+  auto-update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: SPHTech-Platform/gha-pre-commit-autoupdate@main
+        name: Update pre-commit config automatically
