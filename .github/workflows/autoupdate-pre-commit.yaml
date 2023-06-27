@@ -19,3 +19,5 @@ jobs:
     steps:
       - uses: SPHTech-Platform/gha-pre-commit-autoupdate@main
         name: Update pre-commit config automatically
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
