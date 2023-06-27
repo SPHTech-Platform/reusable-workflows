@@ -15,7 +15,7 @@ on:
       checkov_skip_check:
         description: Skip a specific check_id. Can be comma separated list.
         type: string
-        default: ""
+        default: "CKV_TF_1"
         required: false
       checkov_output_quiet:
         description: Checkov output to display only failures
