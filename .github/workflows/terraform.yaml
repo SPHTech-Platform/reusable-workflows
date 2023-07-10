@@ -27,6 +27,11 @@ on:
         type: boolean
         default: false
         required: false
+      checkov_skip_path:
+        description: Path (file or directory) to skip, using regular expression logic, relative to the current working directory. Word boundaries are not implicit; i.e., specifying "dir1" will skip any directory or subdirectory named "dir1". Ignored with -f. (comma separated)
+        type: string
+        default: "cf_templates"
+        required: false
       enable_submodules:
         description: Flag to enable GitHub submodules.
         type: boolean
@@ -328,6 +333,7 @@ jobs:
           quiet: ${{ inputs.checkov_output_quiet }}
           skip_check: ${{ inputs.checkov_skip_check }}
           download_external_modules: ${{ inputs.checkov_download_external_modules }}
+          skip_path: ${{inputs.checkov_skip_path}}
 
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v2
