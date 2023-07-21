@@ -318,7 +318,7 @@ jobs:
           submodules: ${{ inputs.enable_submodules }}
 
       - name: Run tfsec with reviewdog output on the PR
-        uses: reviewdog/action-tfsec@v1.16.0
+        uses: reviewdog/action-tfsec@v1.15.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
