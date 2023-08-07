@@ -55,8 +55,8 @@ jobs:
           npm install -g newman
       - name: Create postman environment file
         run: |
-          if [ "${{ secrets.postman_environment_value }}" != "" ]; then
-            echo "${{ secrets.postman_environment_value }}" > "${GITHUB_WORKSPACE}${{inputs.postman_environment_filepath}}"
+          if [ ${{ secrets.postman_environment_value }} != "" ]; then
+            echo ${{ secrets.postman_environment_value }} > "${GITHUB_WORKSPACE}${{inputs.postman_environment_filepath}}"
       - name: Run the API and Postman's tests
         id: newman_run
         run: |
