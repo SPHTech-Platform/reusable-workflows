@@ -30,6 +30,9 @@ on:
         slack_webhook_url:
           description: "Slack Webhook URL"
           required: true
+        postman_environment_value:
+          description: "Postman Environment Value. To save to the file"
+          required: false
 
 jobs:
   build:
@@ -50,6 +53,10 @@ jobs:
       - name: Install newman
         run: |
           npm install -g newman
+      - name: Create postman environment file
+        run: |
+          if [ "${{ secrets.postman_environment_value }}" != ""]; then
+            echo "${{ secrets.postman_environment_value }}" > "${GITHUB_WORKSPACE}${{inputs.postman_environment_filepath}}"
       - name: Run the API and Postman's tests
         id: newman_run
         run: |
