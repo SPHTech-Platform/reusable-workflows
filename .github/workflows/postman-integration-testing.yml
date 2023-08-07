@@ -57,6 +57,7 @@ jobs:
         run: |
           if [ ! -z "${{ secrets.postman_environment_value }}" ]; then
             echo ${{ secrets.postman_environment_value }} > "${GITHUB_WORKSPACE}${{inputs.postman_environment_filepath}}"
+          fi
       - name: Run the API and Postman's tests
         id: newman_run
         run: |
