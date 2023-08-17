@@ -110,7 +110,7 @@ jobs:
         uses: actions/setup-node@v3
         if: ${{ inputs.default_runner_override_label == 'self-hosted' }}
         with:
-          node-version: 19
+          node-version: 18
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
