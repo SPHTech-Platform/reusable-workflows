@@ -323,7 +323,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           flags: -tee
-          tfsec_version: v1.28.1
+          tfsec_version: v1.28.1 # This is temporary fix for v1.28.2 bug , to be removed
         if: inputs.upload_sarif != true
 
       - name: Run Checkov action
