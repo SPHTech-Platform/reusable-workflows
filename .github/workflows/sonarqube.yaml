@@ -14,11 +14,9 @@ on:
     secrets:
       SONAR_TOKEN:
         description: Token used to authenticate with SonarQube
-        type: string
         required: false
       SONAR_HOST_URL:
         description: URL of the SonarQube application
-        type: string
         required: false
 
 jobs:
