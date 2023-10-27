@@ -321,13 +321,30 @@ jobs:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
 
-      - name: Run tfsec with reviewdog output on the PR
-        uses: reviewdog/action-tfsec@master
+      # - name: Run tfsec with reviewdog output on the PR
+      #   uses: reviewdog/action-tfsec@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     reporter: github-pr-review
+      #     flags: -tee
+      #   if: inputs.upload_sarif != true
+
+      - name: Run Trivy vulnerability scanner in IaC mode
+        uses: aquasecurity/trivy-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
-          flags: -tee
-        if: inputs.upload_sarif != true
+          scan-type: 'config'
+          hide-progress: false
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: 'trivy-results.sarif'
+        if: inputs.upload_sarif == true
 
       - name: Run Checkov action
         id: checkov
