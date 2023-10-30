@@ -7,6 +7,7 @@ on:
   # on demand
   workflow_dispatch:
 
+# Request from Org admin to allow Github Action workflow to make PR under Settings > Actions > General 
 permissions:
   actions: read
   checks: read
