@@ -321,14 +321,6 @@ jobs:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
 
-      # - name: Run tfsec with reviewdog output on the PR
-      #   uses: reviewdog/action-tfsec@master
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     reporter: github-pr-review
-      #     flags: -tee
-      #   if: inputs.upload_sarif != true
-
       - name: Run Trivy vulnerability scanner in IaC mode
         uses: aquasecurity/trivy-action@0.12.0
         with:
