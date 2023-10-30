@@ -330,7 +330,7 @@ jobs:
       #   if: inputs.upload_sarif != true
 
       - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@0.13.0
+        uses: aquasecurity/trivy-action@0.12.0
         with:
           scan-type: 'config'
           hide-progress: false
