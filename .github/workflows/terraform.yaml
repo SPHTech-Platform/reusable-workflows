@@ -340,7 +340,8 @@ jobs:
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
 
-      - name: Remove git from url
+      # https://github.com/aquasecurity/trivy/issues/5003
+      - name: Remove git from url for sarif uploading
         shell: bash
         run: | 
           sed -i 's#git::https:/##g' trivy-results.sarif
