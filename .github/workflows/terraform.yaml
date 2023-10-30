@@ -67,6 +67,10 @@ on:
         description: Run pre-commit against all files
         type: boolean
         default: false
+      tfsec_version:
+        description: tfesc version to use with reviewdog
+        type: string
+        default: "latest"
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
@@ -322,11 +326,12 @@ jobs:
           submodules: ${{ inputs.enable_submodules }}
 
       - name: Run tfsec with reviewdog output on the PR
-        uses: reviewdog/action-tfsec@v1.19.0
+        uses: reviewdog/action-tfsec@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review
           flags: -tee
+          tfsec_version: ${{ inputs.tfsec_version }}
         if: inputs.upload_sarif != true
 
       - name: Run Checkov action
