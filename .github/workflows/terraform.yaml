@@ -115,9 +115,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          # To reset after 1.6 problem is fixed
-          # terraform_version: latest
-          terraform_version: 1.5.7
+          terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
 
       - name: Setup Helm
