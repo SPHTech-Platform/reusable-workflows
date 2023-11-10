@@ -149,6 +149,7 @@ jobs:
         run: |
           pip install pre-commit
           export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
+          pwd
           git fetch origin
           if [ "$GITHUB_EVENT_NAME" == 'pull_request' ]
           then
@@ -267,6 +268,7 @@ jobs:
         run: |
           pip install pre-commit
           export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
+          pwd
           git fetch origin
           if [ "$GITHUB_EVENT_NAME" == 'pull_request' ]
           then
