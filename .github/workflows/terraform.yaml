@@ -55,10 +55,6 @@ on:
         description: Enforce tflint warnings for changed files by default
         type: boolean
         default: false
-      default_runner_override_label:
-        description: Change this to "self-hosted" or "ubuntu-latest"
-        type: string
-        default: "ubuntu-latest"
       runner_label:
         description: Runner label to point to self hosted runners
         type: string
@@ -81,7 +77,6 @@ jobs:
     if: github.ref_name != 'main'
     name: Format and Validate
     runs-on:
-      - ${{ inputs.default_runner_override_label }}
       - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
@@ -94,6 +89,14 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Setup Node only for self-hosted runners
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
+
+      - name: Install missing binaries zip jq curl
+        run: sudo apt-get update && sudo apt-get install zip jq curl -y
+
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
         uses: actions/cache@v3
@@ -105,12 +108,6 @@ jobs:
         with:
           path: ~/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('**/.tflint.hcl') }}
-
-      - name: Setup Node only for self-hosted runners
-        uses: actions/setup-node@v3
-        if: ${{ inputs.default_runner_override_label == 'self-hosted' }}
-        with:
-          node-version: 18
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -179,7 +176,6 @@ jobs:
     name: Linting
     if: github.ref_name != 'main'
     runs-on:
-      - ${{ inputs.default_runner_override_label }}
       - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
@@ -222,12 +218,6 @@ jobs:
         with:
           tflint_version: "v0.47.0"
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup Node only for self-hosted runners
-        uses: actions/setup-node@v3
-        if: ${{ inputs.default_runner_override_label == 'self-hosted' }}
-        with:
-          node-version: 19
 
       - name: Pre-init Hook
         run: ${{ inputs.pre_init_hook }}
@@ -308,7 +298,6 @@ jobs:
     name: Security Checks
     if: github.ref_name != 'main'
     runs-on:
-      - ${{ inputs.default_runner_override_label }}
       - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
@@ -331,7 +320,7 @@ jobs:
       # https://github.com/aquasecurity/trivy/issues/5003
       - name: Remove git from url for sarif uploading
         shell: bash
-        run: | 
+        run: |
           sed -i 's#git::https:/##g' trivy-results.sarif
 
       - name: Upload Trivy scan results to GitHub Security tab
