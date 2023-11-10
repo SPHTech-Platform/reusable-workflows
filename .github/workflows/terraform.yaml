@@ -79,10 +79,8 @@ jobs:
     runs-on:
       - ${{ inputs.runner_label }}
     steps:
-      - name: Setup Node only for self-hosted runners
-        uses: actions/setup-node@v3
-        with:
-          node-version: 19
+      - name: Install missing binaries zip jq curl
+        run: sudo apt-get update && sudo apt-get install zip jq curl git -y
 
       - name: Checkout
         uses: actions/checkout@v3
@@ -94,8 +92,10 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install missing binaries zip jq curl
-        run: sudo apt-get update && sudo apt-get install zip jq curl git -y
+      - name: Setup Node only for self-hosted runners
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
