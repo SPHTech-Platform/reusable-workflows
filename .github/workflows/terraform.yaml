@@ -148,6 +148,7 @@ jobs:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         run: |
           pip install pre-commit
+          export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
           git fetch origin
           if [ "$GITHUB_EVENT_NAME" == 'pull_request' ]
           then
@@ -265,6 +266,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           pip install pre-commit
+          export GIT_DISCOVERY_ACROSS_FILESYSTEM=1
           git fetch origin
           if [ "$GITHUB_EVENT_NAME" == 'pull_request' ]
           then
