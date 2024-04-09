@@ -13,6 +13,11 @@ on:
         type: string
         default: ''
         required: false
+      docker_file_context:
+        description: Docker File Context
+        type: string
+        default: .
+        required: false
       docker_tag_version:
          description: Provide the docker tag names
          type: string
@@ -130,7 +135,7 @@ jobs:
     - name: Docker Build and Push
       uses: docker/build-push-action@v2
       with:
-        context: .
+        context: ${{ inputs.docker_file_context }}
         file: ${{ inputs.docker_file }}
         tags:  ${{ inputs.docker_tag_name }}:${{ inputs.docker_tag_version }}
         build-args: |
