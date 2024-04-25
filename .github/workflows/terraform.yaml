@@ -354,4 +354,4 @@ jobs:
           skip_check: ${{ inputs.checkov_skip_check }}
           download_external_modules: ${{ inputs.checkov_download_external_modules }}
           skip_path: ${{inputs.checkov_skip_path}}
-          skip_framework: ${{ inputs.checkov_skip_framework }}
+          skip_framework: ${{inputs.checkov_skip_framework}}
