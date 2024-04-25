@@ -32,6 +32,11 @@ on:
         type: string
         default: "cf_templates"
         required: false
+      checkov_skip_framework:
+        description: Filter scan to skip specific infrastructure as code frameworks.
+        type: string
+        default: ""
+        required: false
       enable_submodules:
         description: Flag to enable GitHub submodules.
         type: boolean
@@ -349,3 +354,4 @@ jobs:
           skip_check: ${{ inputs.checkov_skip_check }}
           download_external_modules: ${{ inputs.checkov_download_external_modules }}
           skip_path: ${{inputs.checkov_skip_path}}
+          skip_framework: ${{ inputs.checkov_skip_framework }}
