@@ -19,7 +19,7 @@ on:
         required: false
       checkov_output_quiet:
         description: Checkov output to display only failures
-        type: string
+        type: boolean
         default: true
         required: false
       checkov_download_external_modules:
@@ -321,28 +321,28 @@ jobs:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
 
-      # - name: Run Trivy vulnerability scanner in IaC mode
-      #   uses: aquasecurity/trivy-action@0.19.0
-      #   with:
-      #     scan-type: 'config'
-      #     hide-progress: false
-      #     format: 'sarif'
-      #     output: 'trivy-results.sarif'
-      #     exit-code: '1'
-      #     ignore-unfixed: true
-      #     severity: 'CRITICAL,HIGH'
+      - name: Run Trivy vulnerability scanner in IaC mode
+        uses: aquasecurity/trivy-action@0.19.0
+        with:
+          scan-type: 'config'
+          hide-progress: false
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
 
-      # # https://github.com/aquasecurity/trivy/issues/5003
-      # - name: Remove git from url for sarif uploading
-      #   shell: bash
-      #   run: | 
-      #     sed -i 's#git::https:/##g' trivy-results.sarif
+      # https://github.com/aquasecurity/trivy/issues/5003
+      - name: Remove git from url for sarif uploading
+        shell: bash
+        run: | 
+          sed -i 's#git::https:/##g' trivy-results.sarif
 
-      # - name: Upload Trivy scan results to GitHub Security tab
-      #   uses: github/codeql-action/upload-sarif@v3
-      #   with:
-      #     sarif_file: 'trivy-results.sarif'
-      #   # if: inputs.upload_sarif == true
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+        # if: inputs.upload_sarif == true
 
       - name: Get changed files
         id: changed-files
@@ -360,9 +360,9 @@ jobs:
           download_external_modules: ${{ inputs.checkov_download_external_modules }}
           skip_path: ${{inputs.checkov_skip_path}}
           skip_framework: ${{inputs.checkov_skip_framework}}
-          soft_fail: true
 
       - name: Upload Checkov scan results to GitHub Security tab
+        if: inputs.upload_sarif == true
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'results.sarif'
