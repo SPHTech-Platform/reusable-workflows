@@ -214,7 +214,6 @@ jobs:
         uses: azure/setup-helm@v4
         with:
           version: 'latest'
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cache TFlint
         uses: actions/cache@v4
@@ -345,6 +344,10 @@ jobs:
       #     sarif_file: 'trivy-results.sarif'
       #   # if: inputs.upload_sarif == true
 
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+
       - name: Run Checkov action
         id: checkov
         uses: bridgecrewio/checkov-action@master
@@ -352,6 +355,7 @@ jobs:
         with:
           output_format: sarif
           quiet: ${{ inputs.checkov_output_quiet }}
+          file: ${{ steps.changed-files.outputs.all_changed_files }}
           skip_check: ${{ inputs.checkov_skip_check }}
           download_external_modules: ${{ inputs.checkov_download_external_modules }}
           skip_path: ${{inputs.checkov_skip_path}}
