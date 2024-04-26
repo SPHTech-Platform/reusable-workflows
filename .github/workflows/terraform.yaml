@@ -211,7 +211,7 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
 
       - name: Setup Helm
-        uses: azure/setup-helm@v3
+        uses: azure/setup-helm@v4
         with:
           version: 'latest'
           token: ${{ secrets.GITHUB_TOKEN }}
