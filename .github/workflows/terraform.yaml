@@ -355,3 +355,9 @@ jobs:
           download_external_modules: ${{ inputs.checkov_download_external_modules }}
           skip_path: ${{inputs.checkov_skip_path}}
           skip_framework: ${{inputs.checkov_skip_framework}}
+
+      - name: Upload Checkov scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'results.sarif'
+        # if: inputs.upload_sarif == true
