@@ -340,7 +340,7 @@ jobs:
           sed -i 's#git::https:/##g' trivy-results.sarif
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
         # if: inputs.upload_sarif == true
