@@ -335,14 +335,14 @@ jobs:
       # https://github.com/aquasecurity/trivy/issues/5003
       - name: Remove git from url for sarif uploading
         shell: bash
-        run: | 
+        run: |
           sed -i 's#git::https:/##g' trivy-results.sarif
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-results.sarif'
-        # if: inputs.upload_sarif == true
+      # - name: Upload Trivy scan results to GitHub Security tab
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: 'trivy-results.sarif'
+      #   # if: inputs.upload_sarif == true
 
       - name: Get changed files
         id: changed-files
