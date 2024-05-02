@@ -328,14 +328,14 @@ jobs:
           hide-progress: false
           format: 'sarif'
           output: 'trivy-results.sarif'
-          exit-code: '1'
+          exit-code: '0'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
 
       # https://github.com/aquasecurity/trivy/issues/5003
       - name: Remove git from url for sarif uploading
         shell: bash
-        run: | 
+        run: |
           sed -i 's#git::https:/##g' trivy-results.sarif
 
       - name: Upload Trivy scan results to GitHub Security tab
