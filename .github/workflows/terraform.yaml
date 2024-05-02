@@ -19,7 +19,7 @@ on:
         required: false
       checkov_output_quiet:
         description: Checkov output to display only failures
-        type: string
+        type: boolean
         default: true
         required: false
       checkov_download_external_modules:
@@ -90,41 +90,41 @@ jobs:
       - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
       - name: Cache TFLint plugin dir
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('**/.tflint.hcl') }}
 
       - name: Setup Node only for self-hosted runners
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         if: ${{ inputs.default_runner_override_label == 'self-hosted' }}
         with:
           node-version: 18
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
 
       - name: Setup Helm
-        uses: azure/setup-helm@v3
+        uses: azure/setup-helm@v4
         with:
           version: 'latest'
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -172,7 +172,7 @@ jobs:
       - name: precommit run tflint hooks
         id: precommit_run_hooks_all
         if: inputs.pre_commit_run_all
-        uses: pre-commit/action@v3.0.0
+        uses: pre-commit/action@v3.0.1
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
         with:
@@ -188,48 +188,47 @@ jobs:
       - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ env.TF_PLUGIN_CACHE_DIR }}
           key: ${{ runner.os }}-terraform-${{ hashFiles('**/.terraform.lock.hcl') }}
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: latest
           cli_config_credentials_token: ${{ secrets.TFE_TOKEN }}
 
       - name: Setup Helm
-        uses: azure/setup-helm@v3
+        uses: azure/setup-helm@v4
         with:
           version: 'latest'
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cache TFlint
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: /home/runner/.tflint.d/plugins
           key: ${{ runner.os }}-tflint-${{ hashFiles('.tflint.hcl') }}
 
       - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v2
+        uses: terraform-linters/setup-tflint@v4
         with:
-          tflint_version: "v0.47.0"
+          tflint_version: "v0.50.3"
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Node only for self-hosted runners
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         if: ${{ inputs.default_runner_override_label == 'self-hosted' }}
         with:
           node-version: 19
@@ -241,7 +240,7 @@ jobs:
         run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> "$GITHUB_ENV"
 
       - name: Cache Pre-commit
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit
           key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
@@ -288,7 +287,7 @@ jobs:
       - name: precommit run tflint hooks
         id: precommit_run_hooks_all
         if: inputs.pre_commit_run_all
-        uses: pre-commit/action@v3.0.0
+        uses: pre-commit/action@v3.0.1
         continue-on-error: true
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
@@ -317,13 +316,13 @@ jobs:
       - ${{ inputs.runner_label }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
 
       - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@0.12.0
+        uses: aquasecurity/trivy-action@0.19.0
         with:
           scan-type: 'config'
           hide-progress: false
@@ -340,10 +339,14 @@ jobs:
           sed -i 's#git::https:/##g' trivy-results.sarif
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
         # if: inputs.upload_sarif == true
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
 
       - name: Run Checkov action
         id: checkov
@@ -351,7 +354,14 @@ jobs:
         with:
           output_format: sarif
           quiet: ${{ inputs.checkov_output_quiet }}
+          file: ${{ steps.changed-files.outputs.all_changed_files }}
           skip_check: ${{ inputs.checkov_skip_check }}
           download_external_modules: ${{ inputs.checkov_download_external_modules }}
           skip_path: ${{inputs.checkov_skip_path}}
           skip_framework: ${{inputs.checkov_skip_framework}}
+
+      - name: Upload Checkov scan results to GitHub Security tab
+        if: inputs.upload_sarif == true
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'results.sarif'
