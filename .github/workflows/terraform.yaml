@@ -344,10 +344,12 @@ jobs:
           ls -l  trivy-results.sarif
           cat trivy-results.sarif
 
+      - name: Verify Sarif File
+
       - name: Upload Trivy scan results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: trivy-results.sarif
         # if: inputs.upload_sarif == true
 
       - name: Get changed files
