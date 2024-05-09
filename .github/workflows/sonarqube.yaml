@@ -23,7 +23,7 @@ jobs:
   build:
     name: Build
     runs-on:
-      - ${{ inputs.default_runner_override_label }} 
+      - ${{ inputs.default_runner_override_label }}
       - ${{ inputs.runner_label }}
     steps:
       - uses: actions/checkout@v2
