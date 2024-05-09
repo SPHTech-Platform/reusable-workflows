@@ -318,9 +318,14 @@ jobs:
           fetch-depth: 1
           submodules: ${{ inputs.enable_submodules }}
 
+      - name: Build an image from Dockerfile
+        run: |
+          docker build -t docker.io/my-organization/my-app:${{ github.sha }} . --network host
+
       - name: Run Trivy vulnerability scanner in IaC mode
         uses: aquasecurity/trivy-action@0.20.0
         with:
+          image-ref: 'docker.io/my-organization/my-app:${{ github.sha }}'
           scan-type: 'fs'
           hide-progress: false
           format: 'sarif'
