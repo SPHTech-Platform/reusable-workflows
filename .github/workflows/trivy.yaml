@@ -1,8 +1,0 @@
-timeout: 10m
-format: json
-exit-code: 1
-severity:
-  - HIGH
-  - CRITICAL
-debug: true
-quiet: false
