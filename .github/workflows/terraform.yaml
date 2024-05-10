@@ -323,8 +323,8 @@ jobs:
 
       - name: Run Trivy vulnerability scanner in IaC mode
         uses: aquasecurity/trivy-action@0.20.0
-        with:
-          args: config --exit-code 1 --severity HIGH,CRITICAL --format sarif --input /github/workspace --output trivy-results.sarif --trace
+        run: |
+              -c  config --exit-code 1 --severity HIGH,CRITICAL --format sarif --input /github/workspace --output trivy-results.sarif --trace
 
 
       # https://github.com/aquasecurity/trivy/issues/5003
