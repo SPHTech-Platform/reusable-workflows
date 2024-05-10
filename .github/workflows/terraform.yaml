@@ -330,6 +330,8 @@ jobs:
           exit-code: '1'
           # ignore-unfixed: true # Not supported for "config" scan type
           severity: 'CRITICAL,HIGH'
+          args: --trace
+
 
       # https://github.com/aquasecurity/trivy/issues/5003
       - name: Remove git from url for sarif uploading
