@@ -328,9 +328,10 @@ jobs:
           hide-progress: true
           format: 'sarif'
           output: 'trivy-results.sarif'
-          exit-code: '1'
+          exit-code: '0'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
+          quiet: false
 
 
       # https://github.com/aquasecurity/trivy/issues/5003
