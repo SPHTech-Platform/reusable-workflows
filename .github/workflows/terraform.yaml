@@ -331,7 +331,8 @@ jobs:
           # exit-code: '0'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
-          trivy-config: .
+        env:
+          TRIVY_DEBUG: true
 
 
       # https://github.com/aquasecurity/trivy/issues/5003
