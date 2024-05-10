@@ -333,6 +333,7 @@ jobs:
           severity: 'CRITICAL,HIGH'
         env:
           TRIVY_DEBUG: true
+          TRIVY_QUITE: false
 
 
       # https://github.com/aquasecurity/trivy/issues/5003
