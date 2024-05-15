@@ -323,23 +323,23 @@ jobs:
 
       - name: Run Trivy vulnerability scanner in IaC mode
         uses: aquasecurity/trivy-action@0.20.0
-        # with:
-        #   scan-type: 'config'
-        #   hide-progress: false
-        #   format: 'sarif'
-        #   output: 'trivy-results.sarif'
-        #   exit-code: '1'
-        #   ignore-unfixed: true
-        #   severity: 'CRITICAL,HIGH'
-        env:
-          TRIVY_DEBUG: true
-          TRIVY_QUITE: false
-          TRIVY_SCAN_TYPE: 'config'
-          TRIVY_SEVERITY: 'CRITICAL,HIGH'
-          TRIVY_EXIT_CODE: '1'
-          TRIVY_IGNORE_UNFIXED: true
-          TRIVY_FORMAT: 'sarif'
-          TRIVY_OUTPUT: 'trivy-results.sarif'
+        with:
+          scan-type: 'config'
+          hide-progress: false
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+        # env:
+        #   TRIVY_DEBUG: true
+        #   TRIVY_QUITE: false
+        #   TRIVY_SCAN_TYPE: 'config'
+        #   TRIVY_SEVERITY: 'CRITICAL,HIGH'
+        #   TRIVY_EXIT_CODE: '1'
+        #   TRIVY_IGNORE_UNFIXED: true
+        #   TRIVY_FORMAT: 'sarif'
+        #   TRIVY_OUTPUT: 'trivy-results.sarif'
 
 
 
