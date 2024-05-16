@@ -1,0 +1,45 @@
+name: 'PR Checks'
+    
+on: [pull_request]
+
+permissions:
+    contents: read
+    pull-requests: write
+
+jobs:
+  tflint-checks:
+    name: TFLint checks
+    runs-on:
+    - self-hosted
+    - platform-eng-ent
+    steps:
+    - name : Checkout repo
+      uses: actions/checkout@v4
+
+    - uses: terraform-linters/tflint-load-config-action@v2.0.0
+      with:
+        source-repo: SPHTech-Platform/reusable-workflows
+        source-ref: v2
+        source-path: .tflint.hcl
+        destination-path: ${{ github.workspace }}/.tflint.hcl
+      
+    - uses: actions/cache@v2
+      name: Cache plugin dir
+      with:
+        path: ~/.tflint.d/plugins
+        key: ${{ github.workspace }}/.tflint.hcl
+
+    - uses: terraform-linters/setup-tflint@v4
+      name: Setup TFLint
+      with:
+        tflint_version: v0.51.1
+        
+    - name: Show version
+      run: tflint --version
+      
+    # Install plugins
+    - name: Init TFLint
+      run: tflint --init
+      
+    - name: Run TFLint
+      run: tflint -f compact --recursive 
