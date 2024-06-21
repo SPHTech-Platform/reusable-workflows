@@ -322,7 +322,7 @@ jobs:
           submodules: ${{ inputs.enable_submodules }}
 
       - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@0.20.0
+        uses: aquasecurity/trivy-action@0.23.0
         with:
           scan-type: 'config'
           hide-progress: false
