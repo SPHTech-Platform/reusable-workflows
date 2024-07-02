@@ -7,6 +7,11 @@ on:
         type: boolean
         default: true
         required: false
+      trivy_output_format:
+        description: Output format (table, json, sarif, github)
+        type: string
+        default: sarif
+        required: false
       main_branch:
         description: Name of the main branch
         type: string
@@ -326,7 +331,7 @@ jobs:
         with:
           scan-type: 'config'
           hide-progress: false
-          format: 'sarif'
+          format: ${{ inputs.trivy_output_format }}
           output: 'trivy-results.sarif'
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
