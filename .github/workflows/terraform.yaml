@@ -346,10 +346,12 @@ jobs:
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
 
-      - name: Inspect trivy output
+      - name: Upload Trivy scan results to Github for inspection
         if: ${{ inputs.trivy_inspect_output == 'true' }}
-        shell: bash
-        run: cat ${{ inputs.trivy_output }}
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ inputs.trivy_output }}
+          retention-days: 1
 
       # https://github.com/aquasecurity/trivy/issues/5003
       - name: Remove git from url for sarif uploading
