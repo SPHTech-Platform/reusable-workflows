@@ -343,7 +343,7 @@ jobs:
 
       # https://github.com/aquasecurity/trivy/issues/5003
       - name: Remove git from url for sarif uploading
-        if: ${{ inputs.trivy_output != '' }}
+        if: ${{ inputs.trivy_format == 'sarif' && inputs.trivy_output != '' }}
         shell: bash
         run: |
           sed -i 's#git::https:/##g' ${{ inputs.trivy_output }}
