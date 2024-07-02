@@ -17,6 +17,11 @@ on:
         type: string
         default: 'trivy-results.sarif'
         required: false
+      trivy_inspect_output:
+        description: Print trivy output for inspection, set to 'true' for debugging purposes
+        type: string
+        default: 'false'
+        required: false
       main_branch:
         description: Name of the main branch
         type: string
@@ -340,6 +345,11 @@ jobs:
           output: ${{ inputs.trivy_output }}
           ignore-unfixed: true
           severity: 'CRITICAL,HIGH'
+
+      - name: Inspect trivy output
+        if: ${{ inputs.trivy_inspect_output == 'true' }}
+        shell: bash
+        run: cat ${{ inputs.trivy_output }}
 
       # https://github.com/aquasecurity/trivy/issues/5003
       - name: Remove git from url for sarif uploading
