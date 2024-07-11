@@ -350,7 +350,7 @@ jobs:
 
       - name: Run Checkov action
         id: checkov
-        uses: SPHTech-Platform/checkov-action/@fix-image
+        uses: SPHTech-Platform/checkov-action/@orig
         with:
           output_format: sarif
           quiet: ${{ inputs.checkov_output_quiet }}
