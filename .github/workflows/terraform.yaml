@@ -68,6 +68,10 @@ on:
         description: Run pre-commit against all files
         type: boolean
         default: false
+      checkov_image_version:
+        description: CHECKOV Version to scan with
+        type: string
+        default: "3.2.185"
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token
@@ -381,6 +385,7 @@ jobs:
           download_external_modules: ${{ inputs.checkov_download_external_modules }}
           skip_path: ${{inputs.checkov_skip_path}}
           skip_framework: ${{inputs.checkov_skip_framework}}
+          checkov_image_version: ${{ inputs.checkov_image_version}}
 
       - name: Upload Checkov scan results to GitHub Security tab
         if: inputs.upload_sarif == true
