@@ -367,7 +367,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
         with:
-          registries: "206977323828,336198922105"
+          registries: "206977323828"
 
       - name: docker pull image first
         shell: bash
