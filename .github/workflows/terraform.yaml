@@ -372,11 +372,11 @@ jobs:
       - name: docker pull image first
         shell: bash
         run: |
-          docker pull 206977323828.dkr.ecr.ap-southeast-1.amazonaws.com/ghcr/bridgecrewio/checkov:3.2.183
+          docker pull 206977323828.dkr.ecr.ap-southeast-1.amazonaws.com/ghcr/bridgecrewio/checkov:${{ inputs.checkov_image_version}}
 
       - name: Run Checkov action
         id: checkov
-        uses: SPHTech-Platform/checkov-action@fix-image
+        uses: SPHTech-Platform/checkov-action@customised-checkov
         with:
           output_format: sarif
           quiet: ${{ inputs.checkov_output_quiet }}
