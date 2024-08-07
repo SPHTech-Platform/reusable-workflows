@@ -51,7 +51,7 @@ jobs:
       - ${{ inputs.runner_label }}
     steps:
       - name: "Sync Security Alerts to JIRA Issues"
-        uses: reload/github-security-jira@v1.3.1
+        uses: reload/github-security-jira@v1.5.0
         env:
           GH_SECURITY_TOKEN: ${{ secrets.ORG_GITHUB_TOKEN }}
           JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
