@@ -83,6 +83,10 @@ on:
         description: Run pre-commit against all files
         type: boolean
         default: false
+      checkov_image_version:
+        description: CHECKOV Version to scan with
+        type: string
+        default: "3.2.185"
     secrets:
       TFE_TOKEN:
         description: Terraform Cloud Token

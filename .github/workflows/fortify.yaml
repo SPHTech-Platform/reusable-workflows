@@ -68,6 +68,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
+          distribution: 'temurin'
           java-version: 11
 
       ### Set up Fortify ScanCentral Client ###

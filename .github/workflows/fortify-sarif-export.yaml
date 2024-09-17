@@ -48,6 +48,7 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
+          distribution: 'temurin'
           java-version: 11
       # Pull SAST issues from Fortify on Demand and generate GitHub-optimized SARIF output
       - name: Export Results
