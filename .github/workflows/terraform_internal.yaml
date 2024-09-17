@@ -94,7 +94,7 @@ env:
 
 jobs:
   fmt-validate:
-    if: ${{ github.ref_name != 'main' && !startsWith(github.event.organization.login, 'SPHTech') }}
+    if: ${{ github.ref_name != 'main' && startsWith(github.event.organization.login, 'SPHTech') }}
     name: Format and Validate
     runs-on:
       - ${{ inputs.runner_label }}
@@ -194,7 +194,7 @@ jobs:
 
   lint:
     name: Linting
-    if: ${{ github.ref_name != 'main' && !startsWith(github.event.organization.login, 'SPHTech') }}
+    if: ${{ github.ref_name != 'main' && startsWith(github.event.organization.login, 'SPHTech') }}
     runs-on:
       - ${{ inputs.runner_label }}
     steps:
@@ -323,7 +323,7 @@ jobs:
         #steps.tflint.outcome  check for outcome
   security:
     name: Security Checks
-    if: ${{ github.ref_name != 'main' && !startsWith(github.event.organization.login, 'SPHTech') }}
+    if: ${{ github.ref_name != 'main' && startsWith(github.event.organization.login, 'SPHTech') }}
     runs-on:
       - ${{ inputs.runner_label }}
     steps:
