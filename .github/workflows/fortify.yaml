@@ -66,7 +66,7 @@ jobs:
       # Java version to use depends on the Java version required to run your build (if any),
       # and the Java version supported by the ScanCentral Client version that you are running
       - name: Setup Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: 11
 
@@ -93,7 +93,7 @@ jobs:
 
       ### Archive ScanCentral Client logs on failure ###
       - name: Save ScanCentral Logs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
            name: scancentral-logs

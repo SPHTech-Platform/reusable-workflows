@@ -87,6 +87,9 @@ on:
       TFE_TOKEN:
         description: Terraform Cloud Token
         required: false
+      PULLTHROUGH_ACCOUNT:
+        description: Pullthrough Account ID to pull images
+        required: false
 
 env:
   TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"

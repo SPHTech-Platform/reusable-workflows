@@ -133,7 +133,7 @@ jobs:
       if: ${{ (inputs.docker_tag_name =='') && (inputs.ecr_image_name !='') && (inputs.aws_account_id != '') }}
 
     - name: Docker Build and Push
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v6
       with:
         context: ${{ inputs.docker_file_context }}
         file: ${{ inputs.docker_file }}
