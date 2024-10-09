@@ -12,7 +12,7 @@ on:
         type: boolean
         default: true
         required: false
-      enable_security_checks:
+      enable_security:
         description: Run only security checks
         type: boolean
         default: true
@@ -340,7 +340,7 @@ jobs:
         #steps.tflint.outcome  check for outcome
   security:
     name: Security Checks
-    if: github.ref_name != 'main' && inputs.enable_security_checks == true
+    if: github.ref_name != 'main' && inputs.enable_security == true
     runs-on:
       - ${{ inputs.default_runner_override_label }}
       - ${{ inputs.runner_label }}
