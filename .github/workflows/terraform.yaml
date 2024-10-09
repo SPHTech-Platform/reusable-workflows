@@ -2,6 +2,11 @@ name: terraform-ci
 on:
   workflow_call:
     inputs:
+      only_fmt_validate:
+        description: Run only format and validate
+        type: boolean
+        default: false
+        required: false
       upload_sarif:
         description: Upload SARIF results to Github. Available in public repos, or private/internal repos for enterprises with Github Advanced Security.
         type: boolean
@@ -197,7 +202,7 @@ jobs:
 
   lint:
     name: Linting
-    if: github.ref_name != 'main'
+    if: github.ref_name != 'main' && inputs.only_fmt_validate != true
     runs-on:
       - ${{ inputs.default_runner_override_label }}
       - ${{ inputs.runner_label }}
@@ -325,7 +330,7 @@ jobs:
         #steps.tflint.outcome  check for outcome
   security:
     name: Security Checks
-    if: github.ref_name != 'main'
+    if: github.ref_name != 'main' && inputs.only_fmt_validate != true
     runs-on:
       - ${{ inputs.default_runner_override_label }}
       - ${{ inputs.runner_label }}
