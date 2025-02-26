@@ -7,10 +7,12 @@ on:
 
 jobs:
   actionlint:
-    runs-on: ubuntu-latest
+    runs-on: platform-eng-ent-v2-dual
     steps:
       - uses: actions/checkout@v4
       - uses: reviewdog/action-actionlint@v1
+        with:
+          actionlint_flags: -config=.github/actionlint.yaml
         if: github.event_name == 'pull_request'
       - name: Check workflow files
         run: |
