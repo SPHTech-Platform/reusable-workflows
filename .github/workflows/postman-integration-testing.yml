@@ -33,7 +33,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: platform-eng-ent-v2-dual
     permissions:
       contents: read
       id-token: write
