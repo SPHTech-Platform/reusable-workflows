@@ -30,12 +30,12 @@ on:
       trivy_output:
         description: Save results to a file
         type: string
-        default: 'trivy-results.sarif'
+        default: "trivy-results.sarif"
         required: false
       trivy_inspect_output:
         description: Print trivy output for inspection, set to 'true' for debugging purposes
         type: string
-        default: 'false'
+        default: "false"
         required: false
       main_branch:
         description: Name of the main branch
@@ -127,7 +127,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
@@ -156,7 +156,7 @@ jobs:
       - name: Setup Helm
         uses: azure/setup-helm@v4
         with:
-          version: 'latest'
+          version: "latest"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pre-init Hook
@@ -225,7 +225,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
@@ -243,7 +243,7 @@ jobs:
       - name: Setup Helm
         uses: azure/setup-helm@v4
         with:
-          version: 'latest'
+          version: "latest"
 
       - name: Cache TFlint
         uses: actions/cache@v4
@@ -354,12 +354,12 @@ jobs:
       - name: Run Trivy vulnerability scanner in IaC mode
         uses: aquasecurity/trivy-action@0.23.0
         with:
-          scan-type: 'config'
+          scan-type: "config"
           hide-progress: false
           format: ${{ inputs.trivy_format }}
           output: ${{ inputs.trivy_output }}
           ignore-unfixed: true
-          severity: 'CRITICAL,HIGH'
+          severity: "CRITICAL,HIGH"
 
       - name: Upload Trivy scan results to Github for inspection
         if: ${{ inputs.trivy_inspect_output == 'true' }}
@@ -383,7 +383,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v44
+        uses: step-security/changed-files@v45
 
       - name: Run Checkov action
         id: checkov
@@ -401,7 +401,7 @@ jobs:
         if: inputs.upload_sarif == true
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'results.sarif'
+          sarif_file: "results.sarif"
 
   fmt-validate_on_dualstack:
     if: github.ref_name != 'main' && inputs.enable_format == true && inputs.runner_label == 'platform-eng-ent-v2-dual'
@@ -417,7 +417,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
@@ -446,7 +446,7 @@ jobs:
       - name: Setup Helm
         uses: azure/setup-helm@v4
         with:
-          version: 'latest'
+          version: "latest"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pre-init Hook
@@ -514,7 +514,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - run: mkdir -p "${TF_PLUGIN_CACHE_DIR}"
       - name: Cache Terraform
@@ -532,7 +532,7 @@ jobs:
       - name: Setup Helm
         uses: azure/setup-helm@v4
         with:
-          version: 'latest'
+          version: "latest"
 
       - name: Cache TFlint
         uses: actions/cache@v4
@@ -643,12 +643,12 @@ jobs:
       - name: Run Trivy vulnerability scanner in IaC mode
         uses: aquasecurity/trivy-action@0.23.0
         with:
-          scan-type: 'config'
+          scan-type: "config"
           hide-progress: false
           format: ${{ inputs.trivy_format }}
           output: ${{ inputs.trivy_output }}
           ignore-unfixed: true
-          severity: 'CRITICAL,HIGH'
+          severity: "CRITICAL,HIGH"
 
       - name: Upload Trivy scan results to Github for inspection
         if: ${{ inputs.trivy_inspect_output == 'true' }}
@@ -672,7 +672,7 @@ jobs:
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v44
+        uses: step-security/changed-files@v45
 
       - name: Run Checkov action
         id: checkov
@@ -690,4 +690,4 @@ jobs:
         if: inputs.upload_sarif == true
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: 'results.sarif'
+          sarif_file: "results.sarif"
