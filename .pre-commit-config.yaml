@@ -1,10 +1,10 @@
 repos:
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.6.26
+    rev: v1.7.7
     hooks:
       - id: actionlint
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v5.0.0
     hooks:
       # Git style
       - id: check-added-large-files
