@@ -41,7 +41,7 @@ on:
 jobs:
   build-and-scan:
     name: Prisma container scan
-    runs-on: ubuntu-latest
+    runs-on: platform-eng-ent-v2-dual
 
     steps:
       - name: Check out the repository
