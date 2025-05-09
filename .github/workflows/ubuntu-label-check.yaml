@@ -1,0 +1,23 @@
+name: Ubuntu Label Check
+on: [pull_request]
+
+permissions:
+    contents: read
+    pull-requests: write
+
+
+jobs:
+    ubuntu-label-check:
+        runs-on:
+        -  platform-eng-ent-v2-dual
+        continue-on-error: false
+        steps:
+        - name: 'Checkout Repository'
+          uses: actions/checkout@v2
+        - name: 'Check Ubuntu Label'
+          id: ubuntu-label-check
+          run: |
+            if {{ git grep -q 'ubuntu-latest' .github }}; then
+              echo "ubuntu-latest is not allowed in this repository"
+              exit 1
+            fi
