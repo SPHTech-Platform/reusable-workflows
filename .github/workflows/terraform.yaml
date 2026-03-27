@@ -338,7 +338,7 @@ jobs:
       #     docker build -t docker.io/my-organization/my-app:${{ github.sha }} . --network host
 
       - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@0.23.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           scan-type: 'config'
           hide-progress: false
