@@ -42,7 +42,7 @@ jobs:
         node-version: [18.x]
     steps:
       - name: Checkout newshub-postman collection
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{inputs.repository_name}}
           ref: ${{inputs.repository_branch}} # main branch uses the github.ref_name

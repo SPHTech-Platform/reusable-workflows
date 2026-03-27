@@ -7,21 +7,6 @@ on:
         type: boolean
         default: true
         required: false
-      trivy_format:
-        description: Output format (table, json, sarif, github)
-        type: string
-        default: sarif
-        required: false
-      trivy_output:
-        description: Save results to a file
-        type: string
-        default: 'trivy-results.sarif'
-        required: false
-      trivy_inspect_output:
-        description: Print trivy output for inspection, set to 'true' for debugging purposes
-        type: string
-        default: 'false'
-        required: false
       main_branch:
         description: Name of the main branch
         type: string
@@ -113,7 +98,7 @@ jobs:
           python-version: '3.11'
 
       - name: Setup Node only for self-hosted runners
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 19
 
@@ -212,7 +197,7 @@ jobs:
           python-version: '3.11'
 
       - name: Setup Node only for self-hosted runners
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 19
 
@@ -336,36 +321,6 @@ jobs:
       # - name: Build an image from Dockerfile
       #   run: |
       #     docker build -t docker.io/my-organization/my-app:${{ github.sha }} . --network host
-
-      - name: Run Trivy vulnerability scanner in IaC mode
-        uses: aquasecurity/trivy-action@v0.35.0
-        with:
-          scan-type: 'config'
-          hide-progress: false
-          format: ${{ inputs.trivy_format }}
-          output: ${{ inputs.trivy_output }}
-          ignore-unfixed: true
-          severity: 'CRITICAL,HIGH'
-
-      - name: Upload Trivy scan results to Github for inspection
-        if: ${{ inputs.trivy_inspect_output == 'true' }}
-        uses: actions/upload-artifact@v4
-        with:
-          path: ${{ inputs.trivy_output }}
-          retention-days: 1
-
-      # https://github.com/aquasecurity/trivy/issues/5003
-      - name: Remove git from url for sarif uploading
-        if: ${{ inputs.trivy_format == 'sarif' && inputs.trivy_output != '' }}
-        shell: bash
-        run: |
-          sed -i 's#git::https:/##g' ${{ inputs.trivy_output }}
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        if: inputs.upload_sarif == true
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: ${{ inputs.trivy_output }}
 
       - name: Get changed files
         id: changed-files
