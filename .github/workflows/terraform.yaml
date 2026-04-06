@@ -169,6 +169,7 @@ jobs:
         if: inputs.pre_commit_run_all == false
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
+          TF_PLUGIN_CACHE_DIR: ""
         run: |
           pip install pre-commit
           git fetch origin
@@ -190,6 +191,7 @@ jobs:
         uses: pre-commit/action@v3.0.1
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
+          TF_PLUGIN_CACHE_DIR: ""
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
 
@@ -284,6 +286,7 @@ jobs:
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TF_PLUGIN_CACHE_DIR: ""
         run: |
           pip install pre-commit
           git fetch origin
@@ -429,6 +432,7 @@ jobs:
         if: inputs.pre_commit_run_all == false
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
+          TF_PLUGIN_CACHE_DIR: ""
         run: |
           pip install pre-commit
           git fetch origin
@@ -450,6 +454,7 @@ jobs:
         uses: pre-commit/action@v3.0.1
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
+          TF_PLUGIN_CACHE_DIR: ""
         with:
           extra_args: --color=always --show-diff-on-failure --all-files
 
@@ -543,6 +548,7 @@ jobs:
         env:
           SKIP: ${{ steps.precommit_skips.outputs.skips }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TF_PLUGIN_CACHE_DIR: ""
         run: |
           pip install pre-commit
           git fetch origin
